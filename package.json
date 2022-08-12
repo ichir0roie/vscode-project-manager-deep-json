@@ -10,7 +10,9 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:project-manager-deep-json.helloWorld"
+    "onCommand:project-manager-deep-json.helloWorld",
+    "onView:projectsExplorer",
+    "onView:nodeDependencies"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -19,7 +21,24 @@
         "command": "project-manager-deep-json.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "nodeDependencies",
+          "title": "ProjectManager DeepJson",
+					"icon": "images/project-manager-side-bar.svg"
+        }
+      ]
+    },
+    "views": {
+     "nodeDependencies" :[
+      {
+        "id": "nodeDependencies",
+        "name": "ProjectManager DeepJson"
+      }
+     ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
