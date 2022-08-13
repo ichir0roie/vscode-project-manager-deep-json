@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
+export class ProjectManagerDeepJsonProvider implements vscode.TreeDataProvider<Dependency> {
   constructor(private workspaceRoot: string) {}
 
   getTreeItem(element: Dependency): vscode.TreeItem {
@@ -18,7 +18,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
     if (element) {
       return Promise.resolve(
         this.getDepsInPackageJson(
-          path.join(this.workspaceRoot, 'node_modules', element.label, "test.json")
+          path.join(this.workspaceRoot, 'node_modules', element.key, "test.json")
         )
       );
     } else {
@@ -79,12 +79,12 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 
 class Dependency extends vscode.TreeItem {
   constructor(
-    public readonly label: string,
+    public readonly key: string,
     private version: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState
   ) {
-    super(label, collapsibleState);
-    this.tooltip = `${this.label}-${this.version}`;
+    super(key, collapsibleState);
+    this.tooltip = `${this.key}-${this.version}`;
     this.description = this.version;
   }
 

@@ -1,6 +1,6 @@
-# project-manager-deep-json README
+# ProjectManagerDeepJson README
 
-This is the README for your extension "project-manager-deep-json". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "ProjectManagerDeepJson". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

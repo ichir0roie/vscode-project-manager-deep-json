@@ -10,34 +10,100 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:project-manager-deep-json.helloWorld",
+    "onCommand:projectManagerDeepJson.helloWorld",
     "onView:projectsExplorer",
-    "onView:nodeDependencies"
+    "onView:projectManagerDeepJson"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "project-manager-deep-json.helloWorld",
+        "command": "projectManagerDeepJson.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "projectManagerDeepJson.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "projectManagerDeepJson.addEntry",
+        "title": "Add"
+      },
+      {
+        "command": "projectManagerDeepJson.editEntry",
+        "title": "Edit",
+        "icon": {
+          "light": "resources/light/edit.svg",
+          "dark": "resources/dark/edit.svg"
+        }
+      },
+      {
+        "command": "projectManagerDeepJson.deleteEntry",
+        "title": "Delete"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "nodeDependencies",
+          "id": "projectManagerDeepJson",
           "title": "ProjectManager DeepJson",
-					"icon": "images/project-manager-side-bar.svg"
+          "icon": "images/project-manager-side-bar.svg"
         }
       ]
     },
     "views": {
-     "nodeDependencies" :[
+      "projectManagerDeepJson": [
+        {
+          "id": "projectManagerDeepJson",
+          "name": "ProjectManager DeepJson"
+        }
+      ]
+    },
+    "configuration": [
       {
-        "id": "nodeDependencies",
-        "name": "ProjectManager DeepJson"
+        "title": "Project Manager Deep Json",
+        "properties": {
+          "projects": {
+            "type": "object",
+            "description": "project tree",
+            "default": {
+              "project": {
+                "tag": {
+                  "name": "path"
+                }
+              }
+            }
+          }
+        }
       }
-     ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "projectManagerDeepJson.refreshEntry",
+          "when": "view == projectManagerDeepJson",
+          "group": "navigation"
+        },
+        {
+          "command": "projectManagerDeepJson.addEntry",
+          "when": "view == projectManagerDeepJson"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "projectManagerDeepJson.editEntry",
+          "when": "view == projectManagerDeepJson ",
+          "group": "inline"
+        },
+        {
+          "command": "projectManagerDeepJson.deleteEntry",
+          "when": "view == projectManagerDeepJson "
+        }
+      ]
     }
   },
   "scripts": {

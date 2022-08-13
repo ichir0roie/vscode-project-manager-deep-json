@@ -2,7 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-import { NodeDependenciesProvider } from './lib/NodeDependenciesProvider';
+// import { projectManagerDeepJsonProvider } from './lib/projectManagerDeepJsonProvider';
+
+import { DeepJsonProvider } from './lib/DeepJsonProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -10,12 +12,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "project-manager-deep-json" is now active!');
+	console.log('Congratulations, your extension "projectManagerDeepJson" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('project-manager-deep-json.helloWorld', () => {
+	let disposable = vscode.commands.registerCommand('projectManagerDeepJson.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from Project Manager Deep Json!');
@@ -23,20 +25,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
-	const rootPath =
-		vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
-			? vscode.workspace.workspaceFolders[0].uri.fsPath
-			: undefined;
-	if (rootPath === undefined) {
-		vscode.window.showErrorMessage("can't get rootPath");
-		return;
-	}
 	vscode.window.registerTreeDataProvider(
-		'nodeDependencies',
-		new NodeDependenciesProvider(rootPath)
+		'projectManagerDeepJson',
+		new DeepJsonProvider()
 	);
-	vscode.window.createTreeView('nodeDependencies', {
-		treeDataProvider: new NodeDependenciesProvider(rootPath)
+	vscode.window.createTreeView('projectManagerDeepJson', {
+		treeDataProvider: new DeepJsonProvider()
 	});
 }
 
