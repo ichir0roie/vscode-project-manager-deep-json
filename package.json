@@ -8,7 +8,7 @@
   "repository": {
     "url": "https://github.com/ichir0roie/vscode-project-manager-deep-json"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.70.0"
   },
