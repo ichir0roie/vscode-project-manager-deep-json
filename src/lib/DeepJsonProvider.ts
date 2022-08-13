@@ -70,11 +70,15 @@ export class DeepJsonItem extends vscode.TreeItem {
     super(key,state);
     if(typeof value==="string"){
       this.description=value;
+      this.tooltip=value;
     }else{
       this.description=undefined;
+      this.tooltip = undefined;
     }
-    this.tooltip = undefined;
     this.child=value;
+
+    // this.tooltip="tooltip";
+    // this.description="description";
   }
 }
 
