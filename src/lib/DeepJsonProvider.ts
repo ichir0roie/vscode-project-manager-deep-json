@@ -3,6 +3,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { json } from 'stream/consumers';
 
+export function register(){
+	vscode.window.registerTreeDataProvider(
+		'projectManagerDeepJson',
+		new DeepJsonProvider()
+	);
+	vscode.window.createTreeView('projectManagerDeepJson', {
+		treeDataProvider: new DeepJsonProvider()
+	});
+}
+
 export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
 
   getTreeItem(element: DeepJsonItem): vscode.TreeItem {
@@ -47,7 +57,7 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
   }
 }
 
-class DeepJsonItem extends vscode.TreeItem {
+export class DeepJsonItem extends vscode.TreeItem {
   child:any;
   constructor(
     public readonly key: string,
@@ -83,6 +93,6 @@ function getTemplateMapConfiguration():any{
 
 	let ws=vscode.workspace;
 	let config=ws.getConfiguration();
-	const projects:any=config.get('projects');
+	const projects:any=config.get('projectManagerDeepJson.projects');
   return toJson(projects);
 }

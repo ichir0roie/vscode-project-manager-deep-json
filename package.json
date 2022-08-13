@@ -2,6 +2,8 @@
   "name": "project-manager-deep-json",
   "displayName": "Project Manager Deep Json",
   "description": "",
+  "author": {"name": "ichir0roie"},
+  "repository": {"url": "https://github.com/ichir0roie/vscode-project-manager-deep-json"},
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.70.0"
@@ -34,7 +36,7 @@
         "title": "Add"
       },
       {
-        "command": "projectManagerDeepJson.editEntry",
+        "command": "projectManagerDeepJson.openEntry",
         "title": "Edit",
         "icon": {
           "light": "resources/light/edit.svg",
@@ -67,16 +69,9 @@
       {
         "title": "Project Manager Deep Json",
         "properties": {
-          "projects": {
+          "projectManagerDeepJson.projects": {
             "type": "object",
-            "description": "project tree",
-            "default": {
-              "project": {
-                "tag": {
-                  "name": "path"
-                }
-              }
-            }
+            "description": "project tree"
           }
         }
       }
@@ -95,7 +90,7 @@
       ],
       "view/item/context": [
         {
-          "command": "projectManagerDeepJson.editEntry",
+          "command": "projectManagerDeepJson.openEntry",
           "when": "view == projectManagerDeepJson ",
           "group": "inline"
         },
