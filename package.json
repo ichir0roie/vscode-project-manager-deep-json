@@ -53,7 +53,7 @@
         {
           "id": "projectManagerDeepJson",
           "title": "ProjectManager DeepJson",
-          "icon": "images/project-manager-side-bar.svg"
+          "icon": "resources/dark/project.svg"
         }
       ]
     },
