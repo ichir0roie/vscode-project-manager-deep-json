@@ -136,11 +136,26 @@ export async function addConfiguration(context: vscode.ExtensionContext,key:stri
 
   const config=vscode.workspace.getConfiguration();
   let projectsJson=await getProjectsJson(context);
-  projectsJson[key]=value;
 
+  const map=toMap(projectsJson);
+  if (map.size<=0){
+    vscode.window.showInformationMessage("setting file size is 0.");
+  }else{
+    //backup settings
+    backupProject(projectsJson);
+  }
+
+  projectsJson[key]=value;
+  
   const projectsUri=getProjectsUri(context);
   const enc=new TextEncoder();
   const uint8Array=enc.encode(JSON.stringify(projectsJson,null,2));
   await vscode.workspace.fs.writeFile(projectsUri,uint8Array);
   create(context);
+}
+
+function backupProject(projectsJson:any){
+  let ws=vscode.workspace;
+    let config=ws.getConfiguration();
+    config.update('projectManagerDeepJson.projects.backup',projectsJson,true,undefined);
 }

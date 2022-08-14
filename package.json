@@ -73,9 +73,9 @@
       {
         "title": "Project Manager Deep Json",
         "properties": {
-          "projectManagerDeepJson.projects": {
+          "projectManagerDeepJson.projects.backup": {
             "type": "object",
-            "description": "project tree"
+            "description": "project tree backup"
           }
         }
       }
