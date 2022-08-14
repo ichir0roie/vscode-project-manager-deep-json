@@ -26,7 +26,7 @@ export function create(context: vscode.ExtensionContext) {
 }
 
 function onDidChangeSelection(context: vscode.ExtensionContext, elem: readonly DeepJsonItem[]) {
-  console.log(elem[0].currentPath);
+
 }
 function onDidCollapseElement(context: vscode.ExtensionContext, elem: DeepJsonItem) {
   updateProjectsSatus(context, elem.currentPath, false);
