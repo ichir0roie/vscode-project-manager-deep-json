@@ -16,7 +16,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 1. 開いた状態の保存
 2. inlineボタンではなく、行クリックで開く
 
-## not have to
+## don't have to
 
 1. inlineボタンではなく、行クリックで開く(option機能)
 2. タグ同名の設定でタグから開く機能
