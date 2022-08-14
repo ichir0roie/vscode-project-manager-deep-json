@@ -3,9 +3,6 @@
         {   
             "name": "PMDJ",
             "path": "."
-        },{
-            "name": "Project Manager",
-            "path": "D:/Git/read/vscode-project-manager"
         }
     ],
     "settings": {}

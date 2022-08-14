@@ -2,26 +2,33 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { json } from 'stream/consumers';
+import { TextDecoder, TextEncoder } from 'util';
 
-export function register(){
+export function register(context: vscode.ExtensionContext){
 	vscode.window.registerTreeDataProvider(
 		'projectManagerDeepJson',
-		new DeepJsonProvider()
+		new DeepJsonProvider(context)
 	);
-	vscode.window.createTreeView('projectManagerDeepJson', {
-		treeDataProvider: new DeepJsonProvider()
+	create(context);
+}
+
+export function create(context: vscode.ExtensionContext){
+  vscode.window.createTreeView('projectManagerDeepJson', {
+		treeDataProvider: new DeepJsonProvider(context)
 	});
 }
 
 export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
-
+  context: vscode.ExtensionContext;
+  constructor(context: vscode.ExtensionContext){
+    this.context=context;
+  }
   getTreeItem(element: DeepJsonItem): vscode.TreeItem {
     return element;
   }
 
   // call initialize and expand
   getChildren(element?: DeepJsonItem): Thenable<DeepJsonItem[]> {
-
     if (element) {
       // this is child position!!
       return Promise.resolve(this.getChildItems(element));
@@ -31,12 +38,13 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
     }
   }
 
+
   /**
    * Given the path to package.json, read all its dependencies and devDependencies.
    */
-  private getRootItems(): DeepJsonItem[] {
+  private async getRootItems(): Promise<DeepJsonItem[]> {
     // get root item!!
-      const packageJson = getTemplateMapConfiguration();
+      const packageJson =await getProjectsJson(this.context);
       if(packageJson===undefined){
         return [];
       }
@@ -82,21 +90,57 @@ export class DeepJsonItem extends vscode.TreeItem {
   }
 }
 
-function toJson(object:object):any{
-  const jsonString=JSON.stringify(object);
-  const jsonObject=JSON.parse(jsonString);
-  return jsonObject;
-}
 
 function toMap(jsonObject:any):Map<string,any>{
   return new Map<string,any>(Object.entries(jsonObject));
 }
 
-function getTemplateMapConfiguration():any{
-	let templateMap=new Map<string,string>();
+const projectsConfigSection='projectManagerDeepJson.projects';
 
-	let ws=vscode.workspace;
-	let config=ws.getConfiguration();
-	const projects:any=config.get('projectManagerDeepJson.projects');
-  return toJson(projects);
+async function getProjectsJson(context: vscode.ExtensionContext):Promise<any>{
+  const projectsUri=getProjectsUri(context);
+
+  let stat;
+  try{
+    stat=await vscode.workspace.fs.stat(projectsUri);
+  }catch (e){
+    const enc=new TextEncoder();
+    await vscode.workspace.fs.writeFile(projectsUri,enc.encode("{}"));
+  }
+
+  const value=await vscode.workspace.fs.readFile(projectsUri);
+  
+  const dec=new TextDecoder();
+  const json=JSON.parse(dec.decode(value));
+  return json;
+  
+}
+
+
+
+function getProjectsUri(context:vscode.ExtensionContext):vscode.Uri{
+  const globalUri=context.globalStorageUri;
+  return vscode.Uri.file(globalUri.fsPath+"/projects.json");
+}
+
+export function openProjectsSettings(context:vscode.ExtensionContext){
+  const projectsUri=getProjectsUri(context);
+  vscode.window.showTextDocument(projectsUri);
+}
+
+export async function addConfiguration(context: vscode.ExtensionContext,key:string|undefined,value:string){
+  if(key===undefined){
+    key=await vscode.window.showInputBox();
+  }
+  if(key===undefined){return;}
+
+  const config=vscode.workspace.getConfiguration();
+  let projectsJson=await getProjectsJson(context);
+  projectsJson[key]=value;
+
+  const projectsUri=getProjectsUri(context);
+  const enc=new TextEncoder();
+  const uint8Array=enc.encode(JSON.stringify(projectsJson,null,2));
+  await vscode.workspace.fs.writeFile(projectsUri,uint8Array);
+  create(context);
 }

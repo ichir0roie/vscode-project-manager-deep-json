@@ -4,24 +4,32 @@ import * as vscode from 'vscode';
 
 // import { projectManagerDeepJsonProvider } from './lib/projectManagerDeepJsonProvider';
 
-import {register} from './lib/DeepJsonProvider';
+import {register,create,openProjectsSettings} from './lib/DeepJsonProvider';
 
-import { openNewWindow } from './lib/OpenNewWindow';
+import * as MenuManager from './lib/MenuManager';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	let disposable:vscode.Disposable;
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openEntry", (args) => {
-		openNewWindow(args);
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openProject", (args) => {
+		MenuManager.openNewWindow(args);
 	});
 	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshEntry", (args) => {
-		register();
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", (args) => {
+		create(context);
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openJson", (args) => {
+		openProjectsSettings(context);
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.addProject", () => {
+		MenuManager.addFolder(context);
 	});
 	context.subscriptions.push(disposable);
 
-	register();
+	register(context);
 
 }
 

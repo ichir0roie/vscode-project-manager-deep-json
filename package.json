@@ -20,32 +20,36 @@
   "contributes": {
     "commands": [
       {
-        "command": "projectManagerDeepJson.helloWorld",
-        "title": "Hello World"
-      },
-      {
-        "command": "projectManagerDeepJson.refreshEntry",
-        "title": "Refresh",
+        "command": "projectManagerDeepJson.refreshJson",
+        "title": "Refresh Json",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
         }
       },
       {
-        "command": "projectManagerDeepJson.addEntry",
-        "title": "Add"
-      },
-      {
-        "command": "projectManagerDeepJson.openEntry",
-        "title": "Edit",
+        "command": "projectManagerDeepJson.openJson",
+        "title": "Open Json",
         "icon": {
-          "light": "resources/light/edit.svg",
-          "dark": "resources/dark/edit.svg"
+          "light": "resources/light/settings.svg",
+          "dark": "resources/dark/settings.svg"
         }
       },
       {
-        "command": "projectManagerDeepJson.deleteEntry",
-        "title": "Delete"
+        "command": "projectManagerDeepJson.openProject",
+        "title": "Open Project",
+        "icon": {
+          "light": "resources/light/folder-opened.svg",
+          "dark": "resources/dark/folder-opened.svg"
+        }
+      },
+      {
+        "command": "projectManagerDeepJson.addProject",
+        "title": "Add Project",
+        "icon": {
+          "light": "resources/light/save-as.svg",
+          "dark": "resources/dark/save-as.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -79,24 +83,26 @@
     "menus": {
       "view/title": [
         {
-          "command": "projectManagerDeepJson.refreshEntry",
+          "command": "projectManagerDeepJson.refreshJson",
           "when": "view == projectManagerDeepJson",
           "group": "navigation"
         },
         {
-          "command": "projectManagerDeepJson.addEntry",
-          "when": "view == projectManagerDeepJson"
+          "command": "projectManagerDeepJson.openJson",
+          "when": "view == projectManagerDeepJson",
+          "group": "navigation"
+        },
+        {
+          "command": "projectManagerDeepJson.addProject",
+          "when": "view == projectManagerDeepJson",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "projectManagerDeepJson.openEntry",
+          "command": "projectManagerDeepJson.openProject",
           "when": "view == projectManagerDeepJson ",
           "group": "inline"
-        },
-        {
-          "command": "projectManagerDeepJson.deleteEntry",
-          "when": "view == projectManagerDeepJson "
         }
       ]
     }

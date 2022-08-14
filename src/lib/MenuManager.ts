@@ -1,7 +1,10 @@
-import { DeepJsonItem } from "./DeepJsonProvider";
+import { DeepJsonItem,addConfiguration } from "./DeepJsonProvider";
 import * as vscode from 'vscode';
 
+import { getRootPath } from "./Util";
+
 export async function openNewWindow(item:DeepJsonItem){
+    
     const path=item.description;
     if (path===undefined){
         return;
@@ -10,4 +13,10 @@ export async function openNewWindow(item:DeepJsonItem){
     let success=await vscode.commands.executeCommand("vscode.openFolder",uri,{"forceNewWindow":true});
     // let success=await vscode.commands.executeCommand("vscode.openFolder");
     console.log(success);
+}
+
+export async function addFolder(context: vscode.ExtensionContext) {
+    const rootPath=getRootPath();
+    if(rootPath===undefined){return;}
+    addConfiguration(context,undefined,rootPath);
 }
