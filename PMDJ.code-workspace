@@ -3,6 +3,10 @@
         {   
             "name": "PMDJ",
             "path": "."
+        },
+        {
+            "name":"tree-view-sample",
+            "path": "D:/Git/read/vscode-extension-samples/tree-view-sample"
         }
     ],
     "settings": {}

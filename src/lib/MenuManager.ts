@@ -1,4 +1,4 @@
-import { DeepJsonItem,addConfiguration } from "./DeepJsonProvider";
+import { DeepJsonItem,addProject } from "./DeepJsonProvider";
 import * as vscode from 'vscode';
 
 import { getRootPath } from "./Util";
@@ -18,5 +18,5 @@ export async function openNewWindow(item:DeepJsonItem){
 export async function addFolder(context: vscode.ExtensionContext) {
     const rootPath=getRootPath();
     if(rootPath===undefined){return;}
-    addConfiguration(context,undefined,rootPath);
+    addProject(context,undefined,rootPath);
 }

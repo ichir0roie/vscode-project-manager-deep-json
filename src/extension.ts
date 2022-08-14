@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", (args) => {
-		create(context);
+		register(context);
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openJson", (args) => {
@@ -31,6 +31,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	register(context);
 
+
+	
 }
 
 // this method is called when your extension is deactivated

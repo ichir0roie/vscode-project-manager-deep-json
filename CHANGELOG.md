@@ -2,7 +2,7 @@
 
 All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
 
-## 2022/08/14
+## 2022/08/13
 
 + 独立した編集ファイル
 + 設定ファイル編集ボタン
@@ -10,18 +10,21 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 + クリックでnew window
 + 更新
 
+## 2022/08/14
+
++ 開いた状態の保存
+
 
 # Todo
 
 ## Next
 
-+ 開いた状態の保存
++ inlineボタンではなく、行クリックで開く
 
 
 ## Important
 
 + タグ同名の設定でタグから開く機能
-+ inlineボタンではなく、行クリックで開く
 
 
 ## Don't have to
@@ -31,6 +34,7 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 + ssh
 + docker
 + New Project
++ 同じwindowで開く
 
 
 
