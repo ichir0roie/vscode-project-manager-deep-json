@@ -23,32 +23,32 @@
         "command": "projectManagerDeepJson.refreshJson",
         "title": "Refresh Json",
         "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
+          "light": "resources/vscode-icons/light/refresh.svg",
+          "dark": "resources/vscode-icons/dark/refresh.svg"
         }
       },
       {
         "command": "projectManagerDeepJson.openJson",
         "title": "Open Json",
         "icon": {
-          "light": "resources/light/settings.svg",
-          "dark": "resources/dark/settings.svg"
+          "light": "resources/vscode-icons/light/settings.svg",
+          "dark": "resources/vscode-icons/dark/settings.svg"
         }
       },
       {
         "command": "projectManagerDeepJson.openProject",
         "title": "Open Project",
         "icon": {
-          "light": "resources/light/folder-opened.svg",
-          "dark": "resources/dark/folder-opened.svg"
+          "light": "resources/vscode-icons/light/folder-opened.svg",
+          "dark": "resources/vscode-icons/dark/folder-opened.svg"
         }
       },
       {
         "command": "projectManagerDeepJson.addProject",
         "title": "Add Project",
         "icon": {
-          "light": "resources/light/save-as.svg",
-          "dark": "resources/dark/save-as.svg"
+          "light": "resources/vscode-icons/light/save-as.svg",
+          "dark": "resources/vscode-icons/dark/save-as.svg"
         }
       }
     ],
@@ -57,7 +57,7 @@
         {
           "id": "projectManagerDeepJson",
           "title": "ProjectManager DeepJson",
-          "icon": "resources/dark/project.svg"
+          "icon": "resources/vscode-icons/dark/project.svg"
         }
       ]
     },
