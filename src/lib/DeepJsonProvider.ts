@@ -88,7 +88,7 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
       const parentPath = (parentItem === undefined) ? "" : parentItem.currentPath;
       const currentPath = getCurrentPath(parentPath, key);
       if (this.projectsState.has(currentPath)) {
-        state = this.projectsState.get(currentPath) ?
+        state = this.projectsState.get(currentPath)===vscode.TreeItemCollapsibleState.Expanded?
           vscode.TreeItemCollapsibleState.Expanded :
           vscode.TreeItemCollapsibleState.Collapsed;
       }
