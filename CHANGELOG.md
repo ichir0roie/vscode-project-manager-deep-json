@@ -29,11 +29,13 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 
 ## Important
 
++ リスト設定で同時に開く
 + タグ同名の設定でタグから開く機能
 + 不要なsvgによる起動速度検証
 
 ## Don't have to
 
++ 追加時の名前設定機能のオミット
 + inlineボタンではなく、行クリックで開く(option機能)
 + drag and drop
 + ssh
