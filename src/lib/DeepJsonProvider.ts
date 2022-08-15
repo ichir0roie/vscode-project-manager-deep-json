@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 
+import { openNewWindow } from './MenuManager';
+
 export function register(context: vscode.ExtensionContext) {
   let disp = vscode.window.registerTreeDataProvider(
     'projectManagerDeepJson',
@@ -26,8 +28,15 @@ export function create(context: vscode.ExtensionContext) {
 }
 
 function onDidChangeSelection(context: vscode.ExtensionContext, elem: readonly DeepJsonItem[]) {
-
+  if(elem.length<=0){return;}
+  const targetItem:DeepJsonItem=elem[0];
+  if(typeof targetItem.value!=="string"){
+    return;
+  }
+  openNewWindow(elem[0]);
 }
+
+
 function onDidCollapseElement(context: vscode.ExtensionContext, elem: DeepJsonItem) {
   updateProjectsSatus(context, elem.currentPath, false);
 }
@@ -41,9 +50,12 @@ function updateProjectsSatus(context: vscode.ExtensionContext, path: string, exp
 
 export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
   context: vscode.ExtensionContext;
+  projectsState:Map<string,string>;
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
+    this.projectsState=new Map<string,string>();
   }
+  
   getTreeItem(element: DeepJsonItem): vscode.TreeItem {
     return element;
   }
@@ -68,26 +80,27 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
       map = parentItem.child;
     }
     let itemMap = new Array<DeepJsonItem>();
-    const projectStateJson = await getProjectsStateJson(this.context);
-    const projectsState = toMap(projectStateJson);
+
+    if (this.projectsState.size<=0){// initialize ,map
+      const projectStateJson= await getProjectsStateJson(this.context);
+      this.projectsState = toMap(projectStateJson);
+    }
+
     toMap(map).forEach((value, key) => {
       let state = vscode.TreeItemCollapsibleState.Collapsed;
       const parentPath = (parentItem === undefined) ? "" : parentItem.currentPath;
       const currentPath = getCurrentPath(parentPath, key);
-      if (projectsState.has(currentPath)) {
-        state = projectsState.get(currentPath) ?
+      if (this.projectsState.has(currentPath)) {
+        state = this.projectsState.get(currentPath) ?
           vscode.TreeItemCollapsibleState.Expanded :
           vscode.TreeItemCollapsibleState.Collapsed;
       }
+      //ここのカレントパスを保存？
       itemMap.push(new DeepJsonItem(currentPath, state, key, value));
     });
     return itemMap;
   }
 
-  // get onDidChangeTreeData():any{
-  //   console.log("a");
-  //   return null;
-  // }
 }
 
 function getCurrentPath(parentKey: string, currentKey: string) {

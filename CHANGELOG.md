@@ -14,18 +14,23 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 
 + 開いた状態の保存
 
+## 2022/08/15
+
++ inlineボタンではなく、行クリックで開く
+
 
 # Todo
 
 ## Next
 
-+ inlineボタンではなく、行クリックで開く
-
++ 開いた状態保存機能の改善
+  + 存在しないパスの削除
+  + データ読み込み回数の削減
 
 ## Important
 
 + タグ同名の設定でタグから開く機能
-
++ 不要なsvgによる起動速度検証
 
 ## Don't have to
 
