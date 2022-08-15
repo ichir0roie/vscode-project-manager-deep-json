@@ -47,8 +47,8 @@
         "command": "projectManagerDeepJson.addProject",
         "title": "Add Project",
         "icon": {
-          "light": "resources/vscode-icons/icons/light/save-as.svg",
-          "dark": "resources/vscode-icons/icons/dark/save-as.svg"
+          "light": "resources/vscode-icons/icons/light/bookmark.svg",
+          "dark": "resources/vscode-icons/icons/dark/bookmark.svg"
         }
       }
     ],
