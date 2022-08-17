@@ -36,7 +36,7 @@
         }
       },
       {
-        "command": "projectManagerDeepJson.openProject",
+        "command": "projectManagerDeepJson.openWindow",
         "title": "Open Project",
         "icon": {
           "light": "resources/vscode-icons/icons/light/folder-opened.svg",
@@ -100,8 +100,8 @@
       ],
       "view/item/context": [
         {
-          "command": "projectManagerDeepJson.openProject",
-          "when": "view == projectManagerDeepJson ",
+          "command": "projectManagerDeepJson.openWindow",
+          "when": "view == projectManagerDeepJson",
           "group": "inline"
         }
       ]

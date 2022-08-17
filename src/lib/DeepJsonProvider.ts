@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 
-import { openNewWindow } from './MenuManager';
+import { openWindowNew,openWindowThis } from './MenuManager';
 
 export function register(context: vscode.ExtensionContext) {
   let disp = vscode.window.registerTreeDataProvider(
@@ -33,7 +33,7 @@ function onDidChangeSelection(context: vscode.ExtensionContext, elem: readonly D
   if(typeof targetItem.value!=="string"){
     return;
   }
-  openNewWindow(elem[0]);
+  openWindowNew(elem[0]);
 }
 
 
@@ -85,15 +85,23 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
 
     toMap(map).forEach((value, key) => {
       let state = vscode.TreeItemCollapsibleState.Collapsed;
+      if(typeof value==="string"){
+        state=vscode.TreeItemCollapsibleState.None;
+      }
+      try{
+        if(key===parentItem?.key){
+          return;
+        }
+      }catch(e){
+        return;
+      }
+
       const parentPath = (parentItem === undefined) ? "" : parentItem.currentPath;
       const currentPath = getCurrentPath(parentPath, key);
       if (this.projectsState.has(currentPath)) {
         state = this.projectsState.get(currentPath)===vscode.TreeItemCollapsibleState.Expanded?
           vscode.TreeItemCollapsibleState.Expanded :
           vscode.TreeItemCollapsibleState.Collapsed;
-      }
-      if(typeof value==="string"){
-        state=vscode.TreeItemCollapsibleState.None;
       }
       itemArray.push(new DeepJsonItem(currentPath, state, key, value));
     });
@@ -114,7 +122,7 @@ function getCurrentPath(parentKey: string, currentKey: string) {
 
 
 export class DeepJsonItem extends vscode.TreeItem {
-  child: any;
+  child: any=undefined;
   currentPath: string;
   state=vscode.TreeItemCollapsibleState.None;
   constructor(
@@ -124,17 +132,37 @@ export class DeepJsonItem extends vscode.TreeItem {
     public readonly value: any
   ) {
     super(key, state);
+    this.state=state;
+    this.currentPath = currentPath;
+    
+    let success=false; 
     if (typeof value === "string") {
       this.description = value;
       this.tooltip = value;
-    } else {
+      this.child=undefined;
+      success=true;
+    }
+    if(!success){
+      try{
+        const child=value[key];
+        if(typeof child==="string"){
+          // this.child=child;
+          this.tooltip=child;
+          this.description=child;
+          this.child=value;
+          success=true;
+        }
+      }catch(e){
+        console.log(e);
+      }
+    }
+    //TODO for array multi open
+    if(!success){
+      this.child = value;
       this.description = undefined;
       this.tooltip = undefined;
     }
-    this.state=state;
-    this.currentPath = currentPath;
-    this.child = value;
-
+    
     // this.tooltip="tooltip";
     // this.description="description";
   }

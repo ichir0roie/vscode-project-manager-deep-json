@@ -27,23 +27,29 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 + 不要なsvgによる起動速度検証
   + とりあえずいらんやつ消した。
 
-# Todo
-
-## Next
-
-+ selection clear after selected
-
-## Important
+## 2022/08/17
 
 + New Window系
   + inlineボタンでこのWindowで開く
-  + 各パターンのオプション化
 
+
+# Todo
+
+## Next
 + タグ同名の設定でタグと統合
+
+
+## Important
 
 + 追加時の名前設定機能のオミット
   + オプション化
   + 名前自動生成？
++ BUG : クリックしないと表示されない場合がある。
+
+## Maybe later.
+
++ New Window系
+  + 各パターンのオプション化
 
 ## Don't have to
 
@@ -57,8 +63,9 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 + New Project
 + 同じwindowで開く
 
+## difficult
 
-
++ selection clear after selected
 
 
 

@@ -12,8 +12,8 @@ import * as MenuManager from './lib/MenuManager';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	let disposable:vscode.Disposable;
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openProject", (args) => {
-		MenuManager.openNewWindow(args);
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindow", (args) => {
+		MenuManager.openWindowThis(args);
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", (args) => {
