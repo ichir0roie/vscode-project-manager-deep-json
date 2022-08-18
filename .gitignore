@@ -6,3 +6,5 @@ node_modules
 .docs/token.md
 .test
 resources/vscode-icons/icons-bk
+
+backup

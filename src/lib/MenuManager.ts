@@ -1,6 +1,8 @@
 import { DeepJsonItem,addProject } from "./DeepJsonProvider";
 import * as vscode from 'vscode';
 
+import { setTimeout } from "timers/promises";
+
 import { getRootPath } from "./Util";
 
 export async function openWindowNew(item:DeepJsonItem){
@@ -10,14 +12,20 @@ export async function openWindowThis(item:DeepJsonItem){
     openWindow(item,false);
 }
 async function openWindow(item:DeepJsonItem,forceNewWindow:boolean){
-    
-    const path=item.description;
-    if (path===undefined){
-        return;
+
+    if(typeof item.value==="string"){
+        openWindowExecute(item.value,forceNewWindow);
+    }else if(Array.isArray(item.value)){
+        item.value.forEach(async (path:string)=>{
+            openWindowExecute(path,true);
+        });
     }
-    const uri=vscode.Uri.file(path.toString());
-    let success=await vscode.commands.executeCommand("vscode.openFolder",uri,{"forceNewWindow":forceNewWindow});
     // let success=await vscode.commands.executeCommand("vscode.openFolder");
+}
+
+async function openWindowExecute(path:string,forceNewWindow:boolean) {
+    const uri=vscode.Uri.file(path);
+    let success=await vscode.commands.executeCommand("vscode.openFolder",uri,{"forceNewWindow":forceNewWindow});
 }
 
 export async function addFolder(context: vscode.ExtensionContext) {

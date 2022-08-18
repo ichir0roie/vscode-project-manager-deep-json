@@ -32,11 +32,17 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 + New Window系
   + inlineボタンでこのWindowで開く
 
+## 2022/08/19
+
++ タグ同名の設定でタグと統合
++ リスト設定で同時に開く
++ 設定ファイル読み込み時に自動整形
+  + コンマ削除や追加
++ 同じwindowで開く
 
 # Todo
 
 ## Next
-+ タグ同名の設定でタグと統合
 
 
 ## Important
@@ -44,24 +50,21 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 + 追加時の名前設定機能のオミット
   + オプション化
   + 名前自動生成？
-+ BUG : クリックしないと表示されない場合がある。
++ #BUG : クリックしないと表示されない場合がある。
 
 ## Maybe later.
 
 + New Window系
   + 各パターンのオプション化
++ use jsonc-parser
 
 ## Don't have to
 
-+ リスト設定で同時に開く
-+ 設定ファイル読み込み時に自動整形
-  + コンマ削除や追加
 + Explorer右クリックで追加
 + drag and drop
 + ssh
 + docker
 + New Project
-+ 同じwindowで開く
 
 ## difficult
 

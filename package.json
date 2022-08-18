@@ -21,7 +21,7 @@
     "commands": [
       {
         "command": "projectManagerDeepJson.refreshJson",
-        "title": "Refresh Json",
+        "title": "Refresh Json Project Setting",
         "icon": {
           "light": "resources/vscode-icons/icons/light/refresh.svg",
           "dark": "resources/vscode-icons/icons/dark/refresh.svg"
@@ -29,15 +29,23 @@
       },
       {
         "command": "projectManagerDeepJson.openJson",
-        "title": "Open Json",
+        "title": "Open Json Project Setting",
         "icon": {
           "light": "resources/vscode-icons/icons/light/settings.svg",
           "dark": "resources/vscode-icons/icons/dark/settings.svg"
         }
       },
       {
-        "command": "projectManagerDeepJson.openWindow",
-        "title": "Open Project",
+        "command": "projectManagerDeepJson.openWindowThis",
+        "title": "Open Project With This Window",
+        "icon": {
+          "light": "resources/vscode-icons/icons/light/folder-opened.svg",
+          "dark": "resources/vscode-icons/icons/dark/folder-opened.svg"
+        }
+      },
+      {
+        "command": "projectManagerDeepJson.openWindowNew",
+        "title": "Open Project With New Window",
         "icon": {
           "light": "resources/vscode-icons/icons/light/folder-opened.svg",
           "dark": "resources/vscode-icons/icons/dark/folder-opened.svg"
@@ -45,7 +53,7 @@
       },
       {
         "command": "projectManagerDeepJson.addProject",
-        "title": "Add Project",
+        "title": "This Window Add Project",
         "icon": {
           "light": "resources/vscode-icons/icons/light/bookmark.svg",
           "dark": "resources/vscode-icons/icons/dark/bookmark.svg"
@@ -100,9 +108,13 @@
       ],
       "view/item/context": [
         {
-          "command": "projectManagerDeepJson.openWindow",
+          "command": "projectManagerDeepJson.openWindowThis",
           "when": "view == projectManagerDeepJson",
           "group": "inline"
+        },
+        {
+          "command": "projectManagerDeepJson.openWindowNew",
+          "when": "view == projectManagerDeepJson"
         }
       ]
     }
@@ -127,5 +139,8 @@
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
     "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "strip-json-trailing-commas": "^1.1.0"
   }
 }

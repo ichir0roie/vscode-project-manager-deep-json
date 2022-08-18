@@ -4,16 +4,23 @@ import * as vscode from 'vscode';
 
 // import { projectManagerDeepJsonProvider } from './lib/projectManagerDeepJsonProvider';
 
-import {register,create,openProjectsSettings} from './lib/DeepJsonProvider';
+import {register,create,openProjectsSettings,formatProjectSettingJson} from './lib/DeepJsonProvider';
 
 import * as MenuManager from './lib/MenuManager';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+	
+	await formatProjectSettingJson(context);
+	
 	let disposable:vscode.Disposable;
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindow", (args) => {
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindowThis", (args) => {
 		MenuManager.openWindowThis(args);
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindowNew", (args) => {
+		MenuManager.openWindowNew(args);
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", (args) => {
@@ -30,7 +37,6 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	register(context);
-
 
 	
 }
