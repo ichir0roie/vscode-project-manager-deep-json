@@ -39,6 +39,8 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 + 設定ファイル読み込み時に自動整形
   + コンマ削除や追加
 + 同じwindowで開く
++ jsonc 対応
+
 
 # Todo
 
