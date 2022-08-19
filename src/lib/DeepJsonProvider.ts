@@ -137,19 +137,22 @@ export class DeepJsonItem extends vscode.TreeItem {
       value.forEach((line:string)=>{
         desc+=line.split("\\").join("/")+"\n";
       });
-      this.setInfo(value," > "+value.length,desc);
+      this.setInfo(value," -> "+value.length,desc);
     }else if(typeof value==="object"){
+      // folder have root
       const sameNameChild=value[key];
       if(typeof sameNameChild==="string"){
         delete value[key];
         this.setInfo(value,sameNameChild,sameNameChild);
       }else{
+        // folder
         let desc="";
         const map=toMap(value);
         map.forEach((value,key)=>{
           desc+=key+'\n';
         });
-        this.setInfo(value," > "+map.size,desc);
+        // this.setInfo(value," > "+map.size,desc);
+        this.setInfo(value,undefined,desc);
       }
     }else{
       // ???
@@ -277,6 +280,7 @@ async function saveJsonFile(context:vscode.ExtensionContext,filename:string,json
   let jsonStr=JSON.stringify(json, null, 2).split("\\").join("/").split("//").join("/");
   if(filename==="settings"){
     jsonStr=jsonStr.split("}\n").join("},\n");
+    jsonStr=jsonStr.split("]\n").join("],\n");
     jsonStr=jsonStr.split("\"\n").join("\",\n");
   }
   const uint8Array = enc.encode(jsonStr);
