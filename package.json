@@ -4,7 +4,7 @@
   "description": "",
   "publisher": "ichir0roie",
   "repository": "https://github.com/ichir0roie/vscode-project-manager-deep-json",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.70.0"
   },
