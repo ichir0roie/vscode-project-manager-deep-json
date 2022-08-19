@@ -46,6 +46,8 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 
 ## Next
 
++ use jsonc-parser
+  + コメントアウトなどの対応もできるはず。
 
 ## Important
 
@@ -58,7 +60,6 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 
 + New Window系
   + 各パターンのオプション化
-+ use jsonc-parser
 
 ## Don't have to
 
