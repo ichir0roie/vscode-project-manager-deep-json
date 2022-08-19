@@ -50,6 +50,37 @@ project manager by deep layer tree view.
   + 親のパスとして扱われる。
 
 
+# Todo
+
+## Next
+
++ use jsonc-parser
+  + コメントアウトなどの対応もできるはず。
+## Important
+
++ 追加時の名前設定機能のオミット
+  + オプション化
+  + 名前自動生成？
++ //BUG クリックしないと表示されない場合がある。
+
+## Maybe later.
+
++ New Window系
+  + 各パターンのオプション化
+
+## Don't have to
+
++ Explorer右クリックで追加
++ drag and drop
++ ssh
++ docker
++ New Project
+
+## difficult
+
++ selection clear after selected
+
+
 
 
 
