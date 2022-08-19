@@ -48,13 +48,13 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 
 + use jsonc-parser
   + コメントアウトなどの対応もできるはず。
-
++ //BUG たまにフォルダがexpandedになる。
 ## Important
 
 + 追加時の名前設定機能のオミット
   + オプション化
   + 名前自動生成？
-+ #BUG : クリックしないと表示されない場合がある。
++ //BUG クリックしないと表示されない場合がある。
 
 ## Maybe later.
 

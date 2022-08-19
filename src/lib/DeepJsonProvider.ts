@@ -86,14 +86,15 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
 
     toMap(childDict).forEach((value, key) => {
       let state = vscode.TreeItemCollapsibleState.Collapsed;
-      if(typeof value==="string"||Array.isArray(value)){
-        state=vscode.TreeItemCollapsibleState.None;
-      }
       const parentPath = (parentItem === undefined) ? "" : parentItem.currentPath;
       const currentPath = getCurrentPath(parentPath, key);
-      if (this.projectsState.has(currentPath)) {
-        const stateStr=this.projectsState.get(currentPath);
-        state=stateStr?stateStr:vscode.TreeItemCollapsibleState.None;
+      if(typeof value==="string"||Array.isArray(value)){
+        state=vscode.TreeItemCollapsibleState.None;
+      }else{
+        if (this.projectsState.has(currentPath)) {
+          const stateStr=this.projectsState.get(currentPath);
+          state=stateStr?stateStr:vscode.TreeItemCollapsibleState.None;
+        }
       }
       itemArray.push(new DeepJsonItem(currentPath, state, key, value));
     });
@@ -137,7 +138,7 @@ export class DeepJsonItem extends vscode.TreeItem {
       value.forEach((line:string)=>{
         desc+=line.split("\\").join("/")+"\n";
       });
-      this.setInfo(value," -> "+value.length,desc);
+      this.setInfo(value," : "+value.length+" files",desc);
     }else if(typeof value==="object"){
       // folder have root
       const sameNameChild=value[key];
