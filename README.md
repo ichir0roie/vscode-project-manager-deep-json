@@ -54,13 +54,12 @@ project manager by deep layer tree view.
 
 ## Next
 
-+ use jsonc-parser
-  + コメントアウトなどの対応もできるはず。
-## Important
-
 + 追加時の名前設定機能のオミット
   + オプション化
   + 名前自動生成？
+
+## Important
+
 + //BUG クリックしないと表示されない場合がある。
 
 ## Maybe later.

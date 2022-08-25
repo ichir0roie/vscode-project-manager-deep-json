@@ -2,6 +2,12 @@
 
 All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
 
+## 2022/08/25
+
++ use jsonc-parser
+  + コメントアウトなどの対応
++ trailing comma 完全対応？
+
 ## 2022/08/24
 
 + フォルダが開けないバグ
