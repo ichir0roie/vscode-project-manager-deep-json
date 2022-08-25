@@ -23,7 +23,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		MenuManager.openWindowNew(args);
 	});
 	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", (args) => {
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", async (args) => {
+		await formatProjectSettingJson(context);
 		register(context);
 	});
 	context.subscriptions.push(disposable);

@@ -2,6 +2,10 @@
 
 All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
 
+## 2022/08/24
+
++ フォルダが開けないバグ
+
 ## 2022/08/19
 
 + タグ同名の設定でタグと統合

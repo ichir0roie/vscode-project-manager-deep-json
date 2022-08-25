@@ -141,6 +141,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "jsonc": "^2.0.0",
     "strip-json-trailing-commas": "^1.1.0"
   }
 }

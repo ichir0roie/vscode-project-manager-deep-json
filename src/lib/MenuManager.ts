@@ -19,6 +19,8 @@ async function openWindow(item:DeepJsonItem,forceNewWindow:boolean){
         item.value.forEach(async (path:string)=>{
             openWindowExecute(path,true);
         });
+    }else if(item.rootOpenPath!==undefined){
+        openWindowExecute(item.rootOpenPath,forceNewWindow);
     }
     // let success=await vscode.commands.executeCommand("vscode.openFolder");
 }
