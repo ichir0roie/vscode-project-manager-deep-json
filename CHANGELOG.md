@@ -28,7 +28,6 @@ All notable changes to the "ProjectManagerDeepJson" extension will be documented
 
 + //BUG たまにフォルダがexpandedになる。
 
-
 ## 2022/08/17
 
 + New Window系
