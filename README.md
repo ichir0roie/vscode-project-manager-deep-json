@@ -60,7 +60,7 @@ project manager by deep layer tree view.
 
 ## Important
 
-+ //BUG クリックしないと表示されない場合がある。
++ クリックしないと表示されない場合がある。
 
 ## Maybe later.
 

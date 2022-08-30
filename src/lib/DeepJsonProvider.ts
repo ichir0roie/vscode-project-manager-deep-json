@@ -329,9 +329,10 @@ async function addJsonFileByString(
   const uri = vscode.Uri.file(context.globalStorageUri.fsPath + "/" + filename + ".jsonc");
   let text = await readFile(uri);
   const enc = new TextEncoder();
-  let addJson: any = {};
-  addJson[key_] = value;
-  let addJsonStr = `"${key_}":"${value}",\n`;
+  // let addJson: any = {};
+  let saveValue:string=replace(value,"\\","/");
+  // addJson[key_] = saveValue;
+  let addJsonStr = `"${key_}":"${saveValue}",\n`;
   const lastPlace = text.lastIndexOf('}');
   text = text.substring(0, lastPlace) + addJsonStr + text.substring(lastPlace, text.length);
   // text = formatJsonString(text);
@@ -340,10 +341,6 @@ async function addJsonFileByString(
 }
 
 function formatJsonString(jsonString: string) {
-  // jsonString = jsonString.split("}\n").join("},\n");
-  // jsonString = jsonString.split("]\n").join("],\n");
-  // jsonString = jsonString.split("\"\n").join("\",\n");
-  // jsonString = jsonString.split("\\").join("/");
   jsonString=replace(jsonString,"}\n","},\n");
   jsonString=replace(jsonString,"]\n","],\n");
   jsonString=replace(jsonString,"\"\n","\",\n");

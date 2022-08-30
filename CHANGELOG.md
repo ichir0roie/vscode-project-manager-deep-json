@@ -2,6 +2,11 @@
 
 All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
 
+## 2022/08/30
+
++ パス追加時のバックスラッシュをスラッシュに変換
++ workspaceを開いているときの保存機能追加
+
 ## 2022/08/25
 
 + use jsonc-parser
