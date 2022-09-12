@@ -196,25 +196,25 @@ async function readJson(uri: vscode.Uri): Promise<object> {
   } catch (e) {
     writeFile(uri, '{}');
   }
-  let jsonString=await readFile(uri);
-  try{
+  let jsonString = await readFile(uri);
+  try {
 
-    jsonString=jsonc.stripComments(jsonString);
-    
+    jsonString = jsonc.stripComments(jsonString);
+
     jsonString = stripJsonTrailingCommas(jsonString, { stripWhitespace: true });
 
     // ],に対応してない対策
-    jsonString=replace(jsonString,"\n","");
-    jsonString=replace(jsonString," ","");
-    jsonString=replace(jsonString,"],","]");
-    jsonString=replace(jsonString,"][","],[");
-    jsonString=replace(jsonString,"]\"","],\"");
+    jsonString = replaceZettai(jsonString, "\n ", "\n");
+    jsonString = replace(jsonString, "\n", "");
+    jsonString = replace(jsonString, "],", "]");
+    jsonString = replace(jsonString, "][", "],[");
+    jsonString = replace(jsonString, "]\"", "],\"");
     // jsonString=jsonc.uglify(jsonString);
-    
+
     // const obj: object =jsonc.parse(jsonString);
     // return obj;
-  return JSON.parse(jsonString);
-  }catch(error){
+    return JSON.parse(jsonString);
+  } catch (error) {
     console.log(error);
     console.log(jsonString);
     throw error;
@@ -330,7 +330,7 @@ async function addJsonFileByString(
   let text = await readFile(uri);
   const enc = new TextEncoder();
   // let addJson: any = {};
-  let saveValue:string=replace(value,"\\","/");
+  let saveValue: string = replace(value, "\\", "/");
   // addJson[key_] = saveValue;
   let addJsonStr = `"${key_}":"${saveValue}",\n`;
   const lastPlace = text.lastIndexOf('}');
@@ -341,10 +341,10 @@ async function addJsonFileByString(
 }
 
 function formatJsonString(jsonString: string) {
-  jsonString=replace(jsonString,"}\n","},\n");
-  jsonString=replace(jsonString,"]\n","],\n");
-  jsonString=replace(jsonString,"\"\n","\",\n");
-  jsonString=replace(jsonString,"\\","/");
+  jsonString = replace(jsonString, "}\n", "},\n");
+  jsonString = replace(jsonString, "]\n", "],\n");
+  jsonString = replace(jsonString, "\"\n", "\",\n");
+  jsonString = replace(jsonString, "\\", "/");
   return jsonString;
 }
 
@@ -361,7 +361,14 @@ function backupProject(projectsJson: any) {
   config.update('projectManagerDeepJson.projects.backup', projectsJson, true, undefined);
 }
 
-function replace(text:string,before:string,after:string):string{
+function replace(text: string, before: string, after: string): string {
   return text.split(before).join(after);
+}
+
+function replaceZettai(text: string, before: string, after: string): string {
+  while (text.indexOf(before) >= 0) {
+    text = text.split(before).join(after);
+  }
+  return text;
 }
 
