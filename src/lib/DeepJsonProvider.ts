@@ -7,6 +7,7 @@ import stripJsonTrailingCommas from "strip-json-trailing-commas";
 
 import { jsonc } from "jsonc";
 import { json } from 'stream/consumers';
+import { table } from 'console';
 
 export function register(context: vscode.ExtensionContext) {
   let disp = vscode.window.registerTreeDataProvider(
@@ -23,6 +24,7 @@ export function create(context: vscode.ExtensionContext) {
   });
   tv.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<DeepJsonItem>) => {
     onDidChangeSelection(context, e.selection);
+    // tv.reveal(e.selection[0], { focus: false, select: false });
   });
   tv.onDidCollapseElement((e: vscode.TreeViewExpansionEvent<DeepJsonItem>) => {
     onDidCollapseElement(context, e.element);
@@ -58,6 +60,10 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
   }
 
   getTreeItem(element: DeepJsonItem): vscode.TreeItem {
+    return element;
+  }
+
+  getParent(element: DeepJsonItem): vscode.ProviderResult<DeepJsonItem> {
     return element;
   }
 
@@ -271,16 +277,17 @@ export function openProjectsSettings(context: vscode.ExtensionContext) {
 
 export async function addProject(
   context: vscode.ExtensionContext,
-  key: string | undefined,
   value: string
 ) {
-  if (key === undefined) {
-    key = await vscode.window.showInputBox();
-  }
-  if (key === undefined) { return; }
+  // if (key === undefined) {
+  //   key = await vscode.window.showInputBox();
+  // }
+  // if (key === undefined) { return; }
 
   let projectsJson = await getProjectsJson(context);
 
+  let splitValues = value.split("/");
+  let key = splitValues[splitValues.length - 1];
 
   const map = toMap(projectsJson);
   if (map.size <= 0) {
@@ -290,8 +297,10 @@ export async function addProject(
     backupProject(projectsJson);
   }
 
+
+
   // projectsJson[key] = value;
-  await addJsonFileByString(context, "settings", key, value);
+  await addJsonFileByString(context, "settings", value);
   // await saveJsonFile(context, "settings", projectsJson);
   create(context);
 }
@@ -323,7 +332,6 @@ async function saveJsonFile(context: vscode.ExtensionContext, filename: string, 
 async function addJsonFileByString(
   context: vscode.ExtensionContext
   , filename: string
-  , key_: string
   , value: any
 ) {
   const uri = vscode.Uri.file(context.globalStorageUri.fsPath + "/" + filename + ".jsonc");
@@ -331,6 +339,8 @@ async function addJsonFileByString(
   const enc = new TextEncoder();
   // let addJson: any = {};
   let saveValue: string = replace(value, "\\", "/");
+  let splitedValue = saveValue.split("/");
+  let key_ = splitedValue[splitedValue.length - 1];
   // addJson[key_] = saveValue;
   let addJsonStr = `"${key_}":"${saveValue}",\n`;
   const lastPlace = text.lastIndexOf('}');
