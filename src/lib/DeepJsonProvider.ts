@@ -20,7 +20,9 @@ export function register(context: vscode.ExtensionContext) {
 
 export function create(context: vscode.ExtensionContext) {
   let tv = vscode.window.createTreeView('projectManagerDeepJson', {
-    treeDataProvider: new DeepJsonProvider(context)
+    treeDataProvider: new DeepJsonProvider(context),
+    dragAndDropController: new DeepJsonDragAndDropController()
+    // dragAndDropController: new DeepJsonDragAndDropController(context)
   });
   tv.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<DeepJsonItem>) => {
     onDidChangeSelection(context, e.selection);
@@ -66,6 +68,8 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
   getParent(element: DeepJsonItem): vscode.ProviderResult<DeepJsonItem> {
     return element;
   }
+
+  onDidChangeTreeData?: vscode.Event<void | DeepJsonItem | DeepJsonItem[] | null | undefined> | undefined;
 
   // call initialize and expand
   getChildren(element?: DeepJsonItem): Thenable<DeepJsonItem[]> {
@@ -116,6 +120,25 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem> {
     this.projectsState = toMap(projectStateJson);
     await initializeStateJson(context);
   }
+}
+
+export class DeepJsonDragAndDropController implements vscode.TreeDragAndDropController<DeepJsonItem> {
+  // context: vscode.ExtensionContext;
+  // constructor(context: vscode.ExtensionContext) {
+  //   this.context = context;
+  // }
+  dropMimeTypes: readonly string[] = [];
+  dragMimeTypes: readonly string[] = [];
+  handleDrag?(source: readonly DeepJsonItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
+    console.log("handle drag");
+    console.log(source[0]);
+  }
+  handleDrop?(target: DeepJsonItem | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
+    console.log("handle drop");
+    console.log(target);
+
+  }
+
 }
 
 function getCurrentPath(parentKey: string, currentKey: string) {
