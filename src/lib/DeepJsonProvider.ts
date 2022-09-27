@@ -6,6 +6,7 @@ import { openWindowNew, openWindowThis } from './MenuManager';
 import stripJsonTrailingCommas from "strip-json-trailing-commas";
 
 import { jsonc } from "jsonc";
+import { isDataView } from 'util/types';
 
 // https://github.com/microsoft/vscode-extension-samples/blob/main/tree-view-sample/src/testViewDragAndDrop.ts
 
@@ -13,6 +14,9 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   context: vscode.ExtensionContext;
   projectsState = new Map<string, vscode.TreeItemCollapsibleState>();
   initialized: boolean = false;
+
+  rootItems: DeepJsonItem[] = new Array<DeepJsonItem>();
+
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     const tv = vscode.window.createTreeView('projectManagerDeepJson', {
@@ -39,28 +43,36 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   onDidChangeSelection(elem: readonly DeepJsonItem[]) {
     if (elem.length <= 0) { return; }
     const targetItem: DeepJsonItem = elem[0];
-    if (typeof targetItem.value === "string" || Array.isArray(targetItem.value)) {
+    if (typeof targetItem.childrenJsonValue === "string" || Array.isArray(targetItem.childrenJsonValue)) {
       openWindowNew(elem[0]);
     }
   }
 
   onDidCollapseElement(elem: DeepJsonItem) {
+    console.log("onDidCollapse");
     addProjectState(this.context, elem.currentPath, vscode.TreeItemCollapsibleState.Collapsed);
   }
   onDidExpandElement(elem: DeepJsonItem) {
+    console.log("onDidExpand");
     addProjectState(this.context, elem.currentPath, vscode.TreeItemCollapsibleState.Expanded);
   }
-
-  getTreeItem(element: DeepJsonItem): vscode.TreeItem {
+  getTreeItem(element: DeepJsonItem): DeepJsonItem {
+    console.log("getTreeItem");
     return element;
   }
 
   getParent(element: DeepJsonItem): vscode.ProviderResult<DeepJsonItem> {
+    console.log("getParent");
+
     return element;
   }
 
+
+
   // call initialize and expand
   getChildren(element?: DeepJsonItem): Thenable<DeepJsonItem[]> {
+    console.log("getChildren");
+
     if (element) {
       // this is child position!!
       return Promise.resolve(this.getItems(element));
@@ -71,12 +83,19 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   }
 
   private async getItems(parentItem: DeepJsonItem | undefined): Promise<DeepJsonItem[]> {
+    console.log("getItems");
+
+    // TODO to childItems:DeepJsonItem[];
     let childDict: object;
+
     if (parentItem === undefined) {
+      if (this.rootItems.length > 0) {
+        return this.rootItems;
+      }
       // get root item!!
       childDict = await getProjectsJson(this.context);
     } else {
-      childDict = parentItem.value;
+      childDict = parentItem.childrenJsonValue;
     }
     let itemArray = new Array<DeepJsonItem>();
 
@@ -97,9 +116,12 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
           state = stateStr ? stateStr : vscode.TreeItemCollapsibleState.None;
         }
       }
-      itemArray.push(new DeepJsonItem(currentPath, state, key, value));
+      itemArray.push(new DeepJsonItem(currentPath, state, key, value, parentItem));
     });
     await addProjectStates(this.context, itemArray);
+    if (parentItem === undefined) {
+      this.rootItems = itemArray;
+    }
     return itemArray;
   }
 
@@ -112,16 +134,48 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
   dropMimeTypes = ['application/vnd.code.tree.deepJsonProvider'];
   dragMimeTypes = ['text/uri-list'];
+
+
   handleDrag(source: readonly DeepJsonItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
     console.log("handle drag : " + source[0].currentPath);
     // dataTransfer.set("application/test.pmdj", new vscode.DataTransferItem(source));
+    dataTransfer.set("application/vnd.code.tree.deepJsonProvider", new vscode.DataTransferItem(source));
 
   }
   handleDrop(target: DeepJsonItem | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
     console.log("handle drop : " + target?.currentPath);
+    const transferItem = dataTransfer.get("application/vnd.code.tree.deepJsonProvider");
+    if (!transferItem) { return; }
+    if (target === undefined) { return; }
+    this.editElem(target, transferItem.value);
   }
 
+  editElem(target: DeepJsonItem, source: DeepJsonItem[]) {
+    let rootRemove: Boolean = false;
+    source.forEach(element => {
+      delete element.parent?.childrenJsonValue[element.key];
+      if (element.parent === undefined) {
+        // reset root json;
+        this.rootItems.forEach((root, index, rootItems) => {
+          if (element.currentPath === root.currentPath) {
+            rootItems.splice(index, 1);
+            rootRemove = true;
+          }
+        });
+      }
 
+      target.childrenJsonValue[element.key] = element.childrenJsonValue;
+    });
+    this.getChildren(target);
+
+    this._onDidChangeTreeData.fire(new Array(target));
+    this._onDidChangeTreeData.fire(source);
+    if (rootRemove) {
+      this._onDidChangeTreeData.fire(undefined);
+    }
+
+    // update json
+  }
 
 }
 
@@ -132,47 +186,50 @@ function getCurrentPath(parentKey: string, currentKey: string) {
 
 
 export class DeepJsonItem extends vscode.TreeItem {
-  value: any = undefined;
+  childrenJsonValue: any = undefined;
   currentPath: string;
   state = vscode.TreeItemCollapsibleState.None;
   rootOpenPath: string | undefined;
+  parent: DeepJsonItem | undefined;
   constructor(
     currentPath: string,
     state: vscode.TreeItemCollapsibleState,
     public readonly key: string,
-    value: any
+    childrenJsonValue: any,
+    parent: DeepJsonItem | undefined
   ) {
     super(key, state);
     this.state = state;
     this.currentPath = currentPath;
+    this.parent = parent;
 
-    if (typeof value === "string") {
-      this.description = value;
-      this.tooltip = value;
-      this.value = value;
-      this.setInfo(value, value, value);
-    } else if (Array.isArray(value)) {
+    if (typeof childrenJsonValue === "string") {
+      this.description = childrenJsonValue;
+      this.tooltip = childrenJsonValue;
+      this.childrenJsonValue = childrenJsonValue;
+      this.setInfo(childrenJsonValue, childrenJsonValue, childrenJsonValue);
+    } else if (Array.isArray(childrenJsonValue)) {
       let desc = "";
-      value.forEach((line: string) => {
+      childrenJsonValue.forEach((line: string) => {
         desc += line.split("\\").join("/") + "\n";
       });
-      this.setInfo(value, " : " + value.length + " files", desc);
-    } else if (typeof value === "object") {
+      this.setInfo(childrenJsonValue, " : " + childrenJsonValue.length + " files", desc);
+    } else if (typeof childrenJsonValue === "object") {
       // folder have root
-      const sameNameChild = value[key];
+      const sameNameChild = childrenJsonValue[key];
       if (typeof sameNameChild === "string") {
-        this.rootOpenPath = value[key];
-        delete value[key];
-        this.setInfo(value, sameNameChild, sameNameChild);
+        this.rootOpenPath = childrenJsonValue[key];
+        delete childrenJsonValue[key];
+        this.setInfo(childrenJsonValue, sameNameChild, sameNameChild);
       } else {
         // folder
         let desc = "";
-        const map = toMap(value);
+        const map = toMap(childrenJsonValue);
         map.forEach((value, key) => {
           desc += key + '\n';
         });
         // this.setInfo(value," > "+map.size,desc);
-        this.setInfo(value, undefined, desc);
+        this.setInfo(childrenJsonValue, undefined, desc);
       }
     } else {
       // ???
@@ -184,7 +241,7 @@ export class DeepJsonItem extends vscode.TreeItem {
   }
 
   setInfo(value: any, description: string | undefined, tooltip: string | undefined) {
-    this.value = value;
+    this.childrenJsonValue = value;
     this.description = description;
     this.tooltip = tooltip;
   }

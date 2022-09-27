@@ -13,10 +13,10 @@ export async function openWindowThis(item: DeepJsonItem) {
 }
 async function openWindow(item: DeepJsonItem, forceNewWindow: boolean) {
 
-    if (typeof item.value === "string") {
-        openWindowExecute(item.value, forceNewWindow);
-    } else if (Array.isArray(item.value)) {
-        item.value.forEach(async (path: string) => {
+    if (typeof item.childrenJsonValue === "string") {
+        openWindowExecute(item.childrenJsonValue, forceNewWindow);
+    } else if (Array.isArray(item.childrenJsonValue)) {
+        item.childrenJsonValue.forEach(async (path: string) => {
             openWindowExecute(path, true);
         });
     } else if (item.rootOpenPath !== undefined) {
