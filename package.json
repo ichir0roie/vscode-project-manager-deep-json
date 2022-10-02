@@ -29,8 +29,8 @@
         "command": "projectManagerDeepJson.openJsonFolder",
         "title": "Open Extension Folder",
         "icon": {
-          "light": "resources/vscode-icons/icons/light/settings-gear.svg",
-          "dark": "resources/vscode-icons/icons/dark/settings-gear.svg"
+          "light": "resources/vscode-icons/icons/light/debug.svg",
+          "dark": "resources/vscode-icons/icons/dark/debug.svg"
         }
       },
       {
@@ -100,8 +100,7 @@
         },
         {
           "command": "projectManagerDeepJson.openJsonFolder",
-          "when": "view == projectManagerDeepJson",
-          "group": "navigation"
+          "when": "view == projectManagerDeepJson"
         }
       ],
       "view/item/context": [
