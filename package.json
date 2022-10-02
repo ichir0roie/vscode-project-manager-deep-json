@@ -12,43 +12,41 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:projectManagerDeepJson.helloWorld",
-    "onView:projectsExplorer",
     "onView:projectManagerDeepJson"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "projectManagerDeepJson.refreshJson",
-        "title": "Refresh Json Project Setting",
-        "icon": {
-          "light": "resources/vscode-icons/icons/light/refresh.svg",
-          "dark": "resources/vscode-icons/icons/dark/refresh.svg"
-        }
-      },
-      {
         "command": "projectManagerDeepJson.openJson",
-        "title": "Open Json Project Setting",
+        "title": "Open Projects Json File",
         "icon": {
           "light": "resources/vscode-icons/icons/light/settings.svg",
           "dark": "resources/vscode-icons/icons/dark/settings.svg"
         }
       },
       {
+        "command": "projectManagerDeepJson.openJsonFolder",
+        "title": "Open Extension Folder",
+        "icon": {
+          "light": "resources/vscode-icons/icons/light/settings-gear.svg",
+          "dark": "resources/vscode-icons/icons/dark/settings-gear.svg"
+        }
+      },
+      {
         "command": "projectManagerDeepJson.openWindowThis",
         "title": "Open Project With This Window",
         "icon": {
-          "light": "resources/vscode-icons/icons/light/folder-opened.svg",
-          "dark": "resources/vscode-icons/icons/dark/folder-opened.svg"
+          "light": "resources/vscode-icons/icons/light/window.svg",
+          "dark": "resources/vscode-icons/icons/dark/window.svg"
         }
       },
       {
         "command": "projectManagerDeepJson.openWindowNew",
         "title": "Open Project With New Window",
         "icon": {
-          "light": "resources/vscode-icons/icons/light/folder-opened.svg",
-          "dark": "resources/vscode-icons/icons/dark/folder-opened.svg"
+          "light": "resources/vscode-icons/icons/light/multiple-windows.svg",
+          "dark": "resources/vscode-icons/icons/dark/multiple-windows.svg"
         }
       },
       {
@@ -91,7 +89,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "projectManagerDeepJson.refreshJson",
+          "command": "projectManagerDeepJson.addProject",
           "when": "view == projectManagerDeepJson",
           "group": "navigation"
         },
@@ -101,7 +99,7 @@
           "group": "navigation"
         },
         {
-          "command": "projectManagerDeepJson.addProject",
+          "command": "projectManagerDeepJson.openJsonFolder",
           "when": "view == projectManagerDeepJson",
           "group": "navigation"
         }
@@ -111,6 +109,15 @@
           "command": "projectManagerDeepJson.openWindowThis",
           "when": "view == projectManagerDeepJson",
           "group": "inline"
+        },
+        {
+          "command": "projectManagerDeepJson.openWindowNew",
+          "when": "view == projectManagerDeepJson",
+          "group": "inline"
+        },
+        {
+          "command": "projectManagerDeepJson.openWindowThis",
+          "when": "view == projectManagerDeepJson"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",

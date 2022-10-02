@@ -9,10 +9,14 @@ import { openProjectsSettings, openWindowNew, openWindowThis } from './lib/Actio
 
 import { DeepJsonProvider } from './lib/DeepJsonProvider';
 import SettingsProvider from './lib/SettingsProvider';
+import { getProjectsJsonUri } from './lib/Util';
+
+let dsp: DeepJsonProvider;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+	dsp = new DeepJsonProvider(context);
 
 	let disposable: vscode.Disposable;
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindowThis", (args) => {
@@ -24,22 +28,32 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", async (args) => {
-		new DeepJsonProvider(context);
+		dsp = new DeepJsonProvider(context);
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openJson", (args) => {
-		openProjectsSettings(context);
+		openProjectsSettings(context, false);
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openJsonFolder", (args) => {
+		openProjectsSettings(context, true);
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.addProject", () => {
-		new SettingsProvider(context).addProject();
+		dsp.addProject();
 	});
 	context.subscriptions.push(disposable);
 
 	new DeepJsonProvider(context);
 
+	vscode.workspace.onDidSaveTextDocument((e) => {
+		if (e.uri.fsPath === getProjectsJsonUri(context).fsPath) {
+			dsp = new DeepJsonProvider(context);
+		}
 
+	});
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {
+}

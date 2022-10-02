@@ -3,7 +3,9 @@ import { DeepJsonItem } from "./DeepJsonProvider";
 import * as vscode from 'vscode';
 
 import SettingsProvider from "./SettingsProvider";
-import { getProjectsJsonUri } from "./Util";
+import { getProjectsJsonUri, replaceZettai } from "./Util";
+import { join } from "path";
+import { json } from "stream/consumers";
 
 
 export async function openWindowNew(item: DeepJsonItem) {
@@ -31,12 +33,10 @@ async function openWindowExecute(path: string, forceNewWindow: boolean) {
     let success = await vscode.commands.executeCommand("vscode.openFolder", uri, { "forceNewWindow": forceNewWindow });
 }
 
-export function openProjectsSettings(context: vscode.ExtensionContext) {
-    vscode.window.showTextDocument(getProjectsJsonUri(context));
+export function openProjectsSettings(context: vscode.ExtensionContext, folder: boolean) {
+    if (folder) {
+        openWindowExecute(context.globalStorageUri.fsPath, true);
+    } else {
+        vscode.window.showTextDocument(getProjectsJsonUri(context));
+    }
 }
-
-// export async function addFolder(context: vscode.ExtensionContext) {
-//     const rootPath = getRootPath();
-//     if (rootPath === undefined) { return; }
-//     addProject(context, rootPath);
-// }

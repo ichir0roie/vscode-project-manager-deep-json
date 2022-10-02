@@ -8,10 +8,6 @@ import { DeepJsonItem } from './DeepJsonProvider';
 
 class JsonProvider {
 
-    protected toMap(jsonObject: any): Map<string, any> {
-        return new Map<string, any>(Object.entries(jsonObject));
-    }
-
     // base method
     private async readFile(uri: vscode.Uri): Promise<string> {
         const value = await vscode.workspace.fs.readFile(uri);
@@ -94,7 +90,7 @@ export default class SettingsProvider extends JsonProvider {
 
         let projects = await this.readProjects();
 
-        let splitValues = filePath.split("/");
+        let splitValues = util.replaceZettai(filePath, "\\", "/").split("/");
         let key = splitValues[splitValues.length - 1];
 
         if (Object.keys(projects).length <= 0) {

@@ -50,20 +50,16 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   }
 
   onDidCollapseElement(elem: DeepJsonItem) {
-    console.log("onDidCollapse");
     this.settingsProvider.addExpandStates(elem.currentPath, vscode.TreeItemCollapsibleState.Collapsed);
   }
   onDidExpandElement(elem: DeepJsonItem) {
-    console.log("onDidExpand");
     this.settingsProvider.addExpandStates(elem.currentPath, vscode.TreeItemCollapsibleState.Expanded);
   }
   getTreeItem(element: DeepJsonItem): DeepJsonItem {
-    console.log("getTreeItem");
     return element;
   }
 
   getParent(element: DeepJsonItem): vscode.ProviderResult<DeepJsonItem> {
-    console.log("getParent");
 
     return element;
   }
@@ -72,7 +68,6 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
 
   // call initialize and expand
   getChildren(element?: DeepJsonItem): Thenable<DeepJsonItem[]> {
-    console.log("getChildren");
 
     if (element) {
       // this is child position!!
@@ -84,7 +79,6 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   }
 
   private async getItems(parentItem: DeepJsonItem | undefined): Promise<DeepJsonItem[]> {
-    console.log("getItems");
 
     let childDict: any;
 
@@ -94,7 +88,9 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
       // }
 
       // get root item!!
-      await this.initializeSettings();
+      if (this.projects === undefined) {
+        await this.initializeSettings();
+      }
       childDict = this.projects;
     } else {
       childDict = parentItem.childrenJsonValue;
@@ -105,8 +101,8 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
       const value = childDict[key];
 
       let state = vscode.TreeItemCollapsibleState.Collapsed;
-      const parentPath = (parentItem === undefined) ? "" : parentItem.currentPath;
-      const currentPath = getCurrentPath(parentPath, key);
+      const parentPath = (parentItem === undefined) ? undefined : parentItem.currentPath;
+      const currentPath = this.getCurrentPath(parentPath, key);
       if (typeof value === "string" || Array.isArray(value)) {
         state = vscode.TreeItemCollapsibleState.None;
       } else {
@@ -127,57 +123,75 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   }
 
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
-  dropMimeTypes = ['application/vnd.code.tree.deepJsonProvider'];
+  dropMimeTypes = ['application/tree.deepJsonProvider'];
   dragMimeTypes = ['text/uri-list'];
 
 
   handleDrag(source: readonly DeepJsonItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
-    console.log("handle drag : " + source[0].currentPath);
     // dataTransfer.set("application/test.pmdj", new vscode.DataTransferItem(source));
-    dataTransfer.set("application/vnd.code.tree.deepJsonProvider", new vscode.DataTransferItem(source));
+    dataTransfer.set("application/tree.deepJsonProvider", new vscode.DataTransferItem(source));
 
   }
   handleDrop(target: DeepJsonItem | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
-    console.log("handle drop : " + target?.currentPath);
-    const transferItem = dataTransfer.get("application/vnd.code.tree.deepJsonProvider");
+    const transferItem = dataTransfer.get("application/tree.deepJsonProvider");
     if (!transferItem) { return; }
-    if (target === undefined) { return; }
     this.editElem(target, transferItem.value);
+    this.saveProjects();
   }
 
-  editElem(target: DeepJsonItem, source: DeepJsonItem[]) {
+  // XXX
+  editElem(target: DeepJsonItem | undefined, source: DeepJsonItem[]) {
     let rootRemove: Boolean = false;
-    source.forEach(element => {
-      delete element.parent?.childrenJsonValue[element.key];
-      // if (element.parent === undefined) {
-      //   // reset root json;
-      //   this.rootItems.forEach((root, index, rootItems) => {
-      //     if (element.currentPath === root.currentPath) {
-      //       rootItems.splice(index, 1);
-      //       rootRemove = true;
-      //     }
-      //   });
-      // }
-
-      target.childrenJsonValue[element.key] = element.childrenJsonValue;
+    let didChangeList = new Array<DeepJsonItem>();
+    source.forEach(dragItem => {
+      delete dragItem.parent?.childrenJsonValue[dragItem.key];
+      if (dragItem.parent === undefined) {
+        // reset root json;
+        if (this.projects[dragItem.currentPath]) {
+          delete this.projects[dragItem.currentPath];
+          rootRemove = true;
+        }
+      }
+      if (target === undefined) {
+        this.projects[dragItem.key] = dragItem.childrenJsonValue;
+      } else {
+        target.childrenJsonValue[dragItem.key] = dragItem.childrenJsonValue;
+      }
+      this.getChildren(target?.parent);
+      if (dragItem.parent !== undefined) {
+        didChangeList.push(dragItem.parent);
+      }
     });
     this.getChildren(target);
 
+    this._onDidChangeTreeData.fire(didChangeList);
     this._onDidChangeTreeData.fire(new Array(target));
-    this._onDidChangeTreeData.fire(source);
     if (rootRemove) {
       this._onDidChangeTreeData.fire(undefined);
     }
+  }
 
-    // update json
+  private getCurrentPath(parentKey: string | undefined, currentKey: string) {
+    if (parentKey === undefined) {
+      return currentKey;
+    } else {
+      return parentKey + "." + currentKey;
+    }
+  }
+
+  public async addProject() {
+    await this.settingsProvider.addProject();
+    this.projects = undefined;
+    this._onDidChangeTreeData.fire(undefined);
+  }
+
+  public saveProjects() {
+    this.settingsProvider.saveProjects(this.projects);
   }
 
 }
 
 
-function getCurrentPath(parentKey: string, currentKey: string) {
-  return parentKey + "." + currentKey;
-}
 
 
 export class DeepJsonItem extends vscode.TreeItem {
@@ -208,21 +222,15 @@ export class DeepJsonItem extends vscode.TreeItem {
       this.setInfo(childrenJsonValue, " : " + childrenJsonValue.length + " files", desc);
     } else if (typeof childrenJsonValue === "object") {
       // folder have root
-      const sameNameChild = childrenJsonValue[key];
-      if (typeof sameNameChild === "string") {
-        this.rootOpenPath = childrenJsonValue[key];
-        delete childrenJsonValue[key];
-        this.setInfo(childrenJsonValue, sameNameChild, sameNameChild);
-      } else {
-        // folder
-        let desc = "";
-        for (key in childrenJsonValue) {
-          const value = childrenJsonValue[key];
-          desc += key + '\n';
-        }
-        // this.setInfo(value," > "+map.size,desc);
-        this.setInfo(childrenJsonValue, undefined, desc);
+
+      // folder
+      let desc = "";
+      for (key in childrenJsonValue) {
+        const value = childrenJsonValue[key];
+        desc += key + '\n';
       }
+      // this.setInfo(value," > "+map.size,desc);
+      this.setInfo(childrenJsonValue, undefined, desc);
     } else {
       // ???
       this.setInfo(undefined, undefined, undefined);

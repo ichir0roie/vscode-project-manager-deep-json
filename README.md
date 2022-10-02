@@ -14,13 +14,13 @@ project manager by deep layer tree view.
 メニューの設定ボタンから編集。
 ![](https://github.com/ichir0roie/vscode-project-manager-deep-json/blob/main/.mdImages/README/20220819_172500.png)
 
-その前に一度現在のフォルダーを登録しておくとわかりやすい
-![](https://github.com/ichir0roie/vscode-project-manager-deep-json/blob/main/.mdImages/README/20220819_172608.png)
+
+Drag And Drop を実装！
+要素の移動を行える。順番は調整できない。
 
 ```jsonc
 {
     "tagA":{
-        "tagA":"これは上のフォルダのパスとして動作する",
         "project":"this is path",
     },
     "tagB":{
