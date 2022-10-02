@@ -4,8 +4,7 @@
 
 project manager by deep layer tree view.
 
-![.mdImages/README/20220813_194800.png](https://github.com/ichir0roie/vscode-project-manager-deep-json/blob/main/.mdImages/README/20220813_194800.png)
-
+jsonで記述された自由なツリー構造でパスを管理できる。
 
 # How To Use
 
@@ -15,8 +14,9 @@ project manager by deep layer tree view.
 ![](https://github.com/ichir0roie/vscode-project-manager-deep-json/blob/main/.mdImages/README/20220819_172500.png)
 
 
-Drag And Drop を実装！
-要素の移動を行える。順番は調整できない。
++ Drag And Drop を実装！
+  + 要素の移動を行える。
+  + 順番は調整できない。
 
 ```jsonc
 {
@@ -28,16 +28,20 @@ Drag And Drop を実装！
             "can multi path",
             "folder B",
             "or workspace",
+            "when clicked , open all paths as new window",
         ],
-        "sub tag":{
-            "path":"--.code-workspace",
+        "this":{
+          "is":{
+            "project manager":{
+              "deep":"json",
+            }
+          }
         },
     },
+    "key":"can write on jsonc.",
 }
 ```
 
-構造例。jsonc形式で自由に記述可能。
-バグらない限り制限はない。
 
 ## 動作
 
@@ -55,18 +59,12 @@ Drag And Drop を実装！
 
 ## Next
 
-+ 追加時の名前設定機能のオミット
-  + オプション化
-  + 名前自動生成？
-
 ## Important
 
-+ クリックしないと表示されない場合がある。
 
 ## Maybe later.
 
-+ New Window系
-  + 各パターンのオプション化
++ 各パターンのオプション化
 
 ## Don't have to
 

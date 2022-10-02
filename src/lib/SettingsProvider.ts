@@ -83,14 +83,14 @@ export default class SettingsProvider extends JsonProvider {
         this.writeJsonc(this.projectDictUri, projects);
     }
     async addProject() {
-        const filePath = util.getRootPath();
+        let filePath = util.getRootPath();
         if (filePath === undefined) {
             return;
         }
-
+        filePath = util.replaceZettai(filePath, "\\", "/");
         let projects = await this.readProjects();
 
-        let splitValues = util.replaceZettai(filePath, "\\", "/").split("/");
+        let splitValues = filePath.split("/");
         let key = splitValues[splitValues.length - 1];
 
         if (Object.keys(projects).length <= 0) {
