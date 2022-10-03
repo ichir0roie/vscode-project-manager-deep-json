@@ -182,13 +182,29 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   public async addProject() {
     await this.settingsProvider.addProject();
     this.projects = undefined;
-    this.getChildren(undefined);
-    this._onDidChangeTreeData.fire(undefined);
+    this.refreshTreeItem(undefined);
   }
 
   public saveProjects() {
     this.settingsProvider.saveProjects(this.projects);
   }
+
+  // TODO use
+  public deleteItem(treeItem: DeepJsonItem) {
+    let parent = treeItem.parent;
+    if (parent === undefined) {
+      delete this.projects[treeItem.key];
+    } else {
+      delete parent?.childrenJsonValue[treeItem.key];
+    }
+    this.refreshTreeItem(treeItem);
+  }
+
+  private refreshTreeItem(treeItem: DeepJsonItem | undefined) {
+    this.getChildren(treeItem);
+    this._onDidChangeTreeData.fire(new Array(treeItem));
+  }
+
 
 }
 
