@@ -27,10 +27,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		openWindowNew(args);
 	});
 	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refreshJson", async (args) => {
-		dsp = new DeepJsonProvider(context);
-	});
-	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openJson", (args) => {
 		openProjectsSettings(context, false);
 	});

@@ -20,7 +20,7 @@ class JsonProvider {
         try {
             stat = await vscode.workspace.fs.stat(uri);
         } catch (e) {
-            this.writeFile(uri, '{}');
+            await this.writeFile(uri, '{}');
         }
         let jsonString = await this.readFile(uri);
         try {
@@ -80,7 +80,7 @@ export default class SettingsProvider extends JsonProvider {
     }
 
     async saveProjects(projects: any) {
-        this.writeJsonc(this.projectDictUri, projects);
+        await this.writeJsonc(this.projectDictUri, projects);
     }
     async addProject() {
         let filePath = util.getRootPath();
@@ -97,7 +97,7 @@ export default class SettingsProvider extends JsonProvider {
             vscode.window.showInformationMessage("setting file size is 0.");
         }
         projects[key] = filePath;
-        this.saveProjects(projects);
+        await this.saveProjects(projects);
     }
 
     // async initializeExpandStates() {
@@ -105,7 +105,7 @@ export default class SettingsProvider extends JsonProvider {
     // }
 
     async saveExpandStates(expandStates: any) {
-        this.writeJsonc(this.expandStatesUri, expandStates);
+        await this.writeJsonc(this.expandStatesUri, expandStates);
     }
 
     async readExpandStates(): Promise<any> {
