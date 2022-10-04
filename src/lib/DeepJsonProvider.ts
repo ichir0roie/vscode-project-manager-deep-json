@@ -188,6 +188,10 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   public saveProjects() {
     this.settingsProvider.saveProjects(this.projects);
   }
+  private refreshTreeItem(treeItem: DeepJsonItem | undefined) {
+    this.getChildren(treeItem);
+    this._onDidChangeTreeData.fire(new Array(treeItem));
+  }
 
   // TODO use
   public deleteItem(treeItem: DeepJsonItem) {
@@ -200,11 +204,9 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
     this.refreshTreeItem(treeItem);
   }
 
-  private refreshTreeItem(treeItem: DeepJsonItem | undefined) {
-    this.getChildren(treeItem);
-    this._onDidChangeTreeData.fire(new Array(treeItem));
-  }
+  // TODO paste path to add project
 
+  // TODO copy path and add project form meny
 
 }
 
