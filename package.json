@@ -56,6 +56,22 @@
           "light": "resources/vscode-icons/icons/light/bookmark.svg",
           "dark": "resources/vscode-icons/icons/dark/bookmark.svg"
         }
+      },
+      {
+        "command": "projectManagerDeepJson.renameItem",
+        "title": "t"
+      },
+      {
+        "command": "projectManagerDeepJson.deleteItem",
+        "title": "t"
+      },
+      {
+        "command": "projectManagerDeepJson.createDict",
+        "title": "t"
+      },
+      {
+        "command": "projectManagerDeepJson.createList",
+        "title": "t"
       }
     ],
     "viewsContainers": {

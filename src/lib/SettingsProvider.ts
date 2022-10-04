@@ -96,13 +96,11 @@ export default class SettingsProvider extends JsonProvider {
         if (Object.keys(projects).length <= 0) {
             vscode.window.showInformationMessage("setting file size is 0.");
         }
+        //TODO projects[""] = filePath;
         projects[key] = filePath;
         await this.saveProjects(projects);
     }
 
-    // async initializeExpandStates() {
-    //     await this.writeJsonc(this.expandStatesUri, {});
-    // }
 
     async saveExpandStates(expandStates: any) {
         await this.writeJsonc(this.expandStatesUri, expandStates);

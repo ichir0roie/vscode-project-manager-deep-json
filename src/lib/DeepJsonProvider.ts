@@ -135,40 +135,52 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   handleDrop(target: DeepJsonItem | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
     const transferItem = dataTransfer.get("application/tree.deepJsonProvider");
     if (!transferItem) { return; }
-    this.editElem(target, transferItem.value);
-    this.saveProjects();
+    const moved = this.editElem(target, transferItem.value);
+    if (moved) {
+      this.saveProjects();
+    }
   }
 
-  // XXX
-  editElem(target: DeepJsonItem | undefined, source: DeepJsonItem[]) {
-    let rootRemove: Boolean = false;
-    let didChangeList = new Array<DeepJsonItem>();
+  editElem(target: DeepJsonItem | undefined, source: DeepJsonItem[]): boolean {
+    let rootRemove: boolean = false;
+    let fireTarget = new Array<DeepJsonItem | undefined>();
     source.forEach(dragItem => {
-      delete dragItem.parent?.childrenJsonValue[dragItem.key];
-      if (dragItem.parent === undefined) {
-        // reset root json;
-        if (this.projects[dragItem.currentPath]) {
-          delete this.projects[dragItem.currentPath];
+
+      if (target === undefined && dragItem.parent === undefined) {
+        return;
+      } else if (target === undefined) {
+        this.projects[dragItem.key] = dragItem.childrenJsonValue;
+      } else if (Array.isArray(target.childrenJsonValue) && typeof dragItem.childrenJsonValue === "string") {
+        target.childrenJsonValue.push(dragItem.childrenJsonValue);
+      } else if (typeof target.childrenJsonValue === "object") {
+        target.childrenJsonValue[dragItem.key] = dragItem.childrenJsonValue;
+      } else {
+        return;
+      }
+
+      // delete dragItem
+      if (dragItem.parent !== undefined) {
+        fireTarget.push(dragItem.parent);
+        delete dragItem.parent?.childrenJsonValue[dragItem.key];
+      } else {// root item
+        if (this.projects[dragItem.key]) {
+          delete this.projects[dragItem.key];
           rootRemove = true;
         }
       }
-      if (target === undefined) {
-        this.projects[dragItem.key] = dragItem.childrenJsonValue;
-      } else {
-        target.childrenJsonValue[dragItem.key] = dragItem.childrenJsonValue;
-      }
-      this.getChildren(target?.parent);
-      if (dragItem.parent !== undefined) {
-        didChangeList.push(dragItem.parent);
-      }
     });
-    this.getChildren(target);
-
-    this._onDidChangeTreeData.fire(didChangeList);
-    this._onDidChangeTreeData.fire(new Array(target));
     if (rootRemove) {
-      this._onDidChangeTreeData.fire(undefined);
+      fireTarget.push(undefined);
     }
+    if (fireTarget.length <= 0) {
+      return false;
+    }
+
+    fireTarget.push(target);
+
+    this._onDidChangeTreeData.fire(fireTarget);
+
+    return true;
   }
 
   private getCurrentPath(parentKey: string | undefined, currentKey: string) {
@@ -202,6 +214,18 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
       delete parent?.childrenJsonValue[treeItem.key];
     }
     this.refreshTreeItem(treeItem);
+  }
+
+
+
+  private addList(treeItem: DeepJsonItem) {
+    // if (typeof treeItem.childrenJsonValue === "string") {
+    // } else if (typeof treeItem.childrenJsonValue === "object") {
+    // } else if (Array.isArray(treeItem.childrenJsonValue)){
+    // }
+    if (typeof treeItem.childrenJsonValue === "object") {
+      treeItem.childrenJsonValue[""] = [];
+    }
   }
 
   // TODO paste path to add project
