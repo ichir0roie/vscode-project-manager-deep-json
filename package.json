@@ -59,19 +59,19 @@
       },
       {
         "command": "projectManagerDeepJson.renameItem",
-        "title": "t"
+        "title": "Rename"
       },
       {
         "command": "projectManagerDeepJson.deleteItem",
-        "title": "t"
+        "title": "Delete"
       },
       {
         "command": "projectManagerDeepJson.createDict",
-        "title": "t"
+        "title": "Create Dict"
       },
       {
         "command": "projectManagerDeepJson.createList",
-        "title": "t"
+        "title": "Create List"
       }
     ],
     "viewsContainers": {
@@ -121,22 +121,44 @@
       ],
       "view/item/context": [
         {
-          "command": "projectManagerDeepJson.openWindowThis",
+          "command": "projectManagerDeepJson.renameItem",
           "when": "view == projectManagerDeepJson",
-          "group": "inline"
+          "group": "1_main@1"
+        },
+        {
+          "command": "projectManagerDeepJson.deleteItem",
+          "when": "view == projectManagerDeepJson",
+          "group": "1_main@2"
+        },
+        {
+          "command": "projectManagerDeepJson.createDict",
+          "when": "view == projectManagerDeepJson",
+          "group": "1_main@3"
+        },
+        {
+          "command": "projectManagerDeepJson.createList",
+          "when": "view == projectManagerDeepJson",
+          "group": "1_main@4"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",
           "when": "view == projectManagerDeepJson",
-          "group": "inline"
+          "group": "2_sub@1"
         },
         {
           "command": "projectManagerDeepJson.openWindowThis",
-          "when": "view == projectManagerDeepJson"
+          "when": "view == projectManagerDeepJson",
+          "group": "2_sub@2"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",
-          "when": "view == projectManagerDeepJson"
+          "when": "view == projectManagerDeepJson",
+          "group": "inline@1"
+        },
+        {
+          "command": "projectManagerDeepJson.openWindowThis",
+          "when": "view == projectManagerDeepJson",
+          "group": "inline@2"
         }
       ]
     }

@@ -37,7 +37,7 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
 
     context.subscriptions.push(tv);
   }
-  private _onDidChangeTreeData: vscode.EventEmitter<(DeepJsonItem | undefined)[] | undefined> = new vscode.EventEmitter<DeepJsonItem[] | undefined>();
+  public _onDidChangeTreeData: vscode.EventEmitter<(DeepJsonItem | undefined)[] | undefined> = new vscode.EventEmitter<DeepJsonItem[] | undefined>();
   // We want to use an array as the event type, but the API for this is currently being finalized. Until it's finalized, use any.
   public onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
 

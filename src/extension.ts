@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 
 import { openProjectsSettings, openWindowNew, openWindowThis } from './lib/Action';
 
-import { DeepJsonProvider } from './lib/DeepJsonProvider';
+import { DeepJsonItem, DeepJsonProvider } from './lib/DeepJsonProvider';
 import SettingsProvider from './lib/SettingsProvider';
 import { getProjectsJsonUri } from './lib/Util';
 
@@ -40,7 +40,26 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 
-	new DeepJsonProvider(context);
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.renameItem", (treeItem: DeepJsonItem) => {
+		//TODO to action;
+		//TODO show inputbox
+		let state = vscode.TreeItemCollapsibleState.Collapsed;
+		if (treeItem.collapsibleState !== undefined) {
+			state = treeItem.collapsibleState;
+		}
+		if (treeItem.parent !== undefined) {
+			delete treeItem.parent?.childrenJsonValue[treeItem.key];
+			treeItem.parent.childrenJsonValue["renamed"] = treeItem.childrenJsonValue;
+			dsp._onDidChangeTreeData.fire(new Array(treeItem.parent));
+		} else {
+			delete dsp.projects[treeItem.key];
+			dsp._onDidChangeTreeData.fire(undefined);
+		}
+
+	});
+	context.subscriptions.push(disposable);
+
+	//TODO other method delete , create and create
 
 	vscode.workspace.onDidSaveTextDocument((e) => {
 		if (e.uri.fsPath === getProjectsJsonUri(context).fsPath) {
