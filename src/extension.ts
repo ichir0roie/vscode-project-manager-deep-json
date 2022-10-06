@@ -5,18 +5,18 @@ import * as vscode from 'vscode';
 // import { projectManagerDeepJsonProvider } from './lib/projectManagerDeepJsonProvider';
 
 
-import { openProjectsSettings, openWindowNew, openWindowThis } from './lib/Action';
+import { openProjectsSettings, openWindowNew, openWindowThis, renameItem } from './lib/Action';
 
 import { DeepJsonItem, DeepJsonProvider } from './lib/DeepJsonProvider';
 import SettingsProvider from './lib/SettingsProvider';
 import { getProjectsJsonUri } from './lib/Util';
 
-let dsp: DeepJsonProvider;
+let treeView: DeepJsonProvider;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-	dsp = new DeepJsonProvider(context);
+	treeView = new DeepJsonProvider(context);
 
 	let disposable: vscode.Disposable;
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindowThis", (args) => {
@@ -36,36 +36,22 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.addProject", () => {
-		dsp.addProject();
+		treeView.addProject();
 	});
 	context.subscriptions.push(disposable);
 
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.renameItem", (treeItem: DeepJsonItem) => {
-		//TODO to action;
-		//TODO show inputbox
-		let state = vscode.TreeItemCollapsibleState.Collapsed;
-		if (treeItem.collapsibleState !== undefined) {
-			state = treeItem.collapsibleState;
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.renameItem",
+		(treeItem: DeepJsonItem) => {
+			renameItem(treeView, treeItem);
 		}
-		if (treeItem.parent !== undefined) {
-			delete treeItem.parent?.childrenJsonValue[treeItem.key];
-			treeItem.parent.childrenJsonValue["renamed"] = treeItem.childrenJsonValue;
-			dsp._onDidChangeTreeData.fire(new Array(treeItem.parent));
-		} else {
-			delete dsp.projects[treeItem.key];
-			dsp._onDidChangeTreeData.fire(undefined);
-		}
-
-	});
-	context.subscriptions.push(disposable);
+	);
 
 	//TODO other method delete , create and create
 
 	vscode.workspace.onDidSaveTextDocument((e) => {
 		if (e.uri.fsPath === getProjectsJsonUri(context).fsPath) {
-			dsp = new DeepJsonProvider(context);
+			treeView = new DeepJsonProvider(context);
 		}
-
 	});
 }
 

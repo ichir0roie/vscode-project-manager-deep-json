@@ -1,4 +1,4 @@
-import { DeepJsonItem } from "./DeepJsonProvider";
+import { DeepJsonItem, DeepJsonProvider } from "./DeepJsonProvider";
 
 import * as vscode from 'vscode';
 
@@ -40,3 +40,26 @@ export function openProjectsSettings(context: vscode.ExtensionContext, folder: b
         vscode.window.showTextDocument(getProjectsJsonUri(context));
     }
 }
+
+export async function renameItem(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
+    //TODO show inputbox
+
+    const renameKey = await vscode.window.showInputBox();
+    if (renameKey === undefined) { return; }
+
+    let state = vscode.TreeItemCollapsibleState.Collapsed;
+    if (treeItem.collapsibleState !== undefined) {
+        state = treeItem.collapsibleState;
+    }
+    if (treeItem.parent !== undefined) {
+        delete treeItem.parent?.childrenJsonValue[treeItem.key];
+        treeItem.parent.childrenJsonValue[renameKey]=treeItem.childrenJsonValue;
+        treeView._onDidChangeTreeData.fire(new Array(treeItem.parent));
+    } else {
+        delete treeView.projects[treeItem.key];
+        treeView.projects[renameKey]=treeItem.childrenJsonValue;
+        treeView._onDidChangeTreeData.fire(undefined);
+    }
+    
+}
+

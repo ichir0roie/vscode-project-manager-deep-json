@@ -229,6 +229,7 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   }
 
   // TODO paste path to add project
+  
 
   // TODO copy path and add project form meny
 
