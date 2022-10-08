@@ -2,6 +2,10 @@
 
 All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
 
+## 2022/10/08
+
+* implement menu
+
 ## 2022/10/02
 
 drag and drop!
