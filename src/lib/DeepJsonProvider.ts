@@ -15,8 +15,6 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   projects: any;
   expandStates: any;
 
-  // TODO 閉じるときに、settingsの全更新。
-
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     this.settingsProvider = new SettingsProvider(context);
@@ -191,8 +189,8 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
     }
   }
 
-  public async addProject() {
-    await this.settingsProvider.addProject();
+  public async addProject(uri: vscode.Uri | undefined = undefined) {
+    await this.settingsProvider.addProject(uri);
     this.projects = undefined;
     this.refreshTreeItem(undefined);
   }

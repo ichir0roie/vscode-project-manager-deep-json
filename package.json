@@ -58,6 +58,10 @@
         }
       },
       {
+        "command": "projectManagerDeepJson.refresh",
+        "title": "Refresh"
+      },
+      {
         "command": "projectManagerDeepJson.renameItem",
         "title": "Rename"
       },
@@ -72,6 +76,10 @@
       {
         "command": "projectManagerDeepJson.createList",
         "title": "Create List"
+      },
+      {
+        "command": "projectManagerDeepJson.addTo",
+        "title": "Add To PMDJ"
       }
     ],
     "viewsContainers": {
@@ -103,6 +111,12 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "command": "projectManagerDeepJson.addTo",
+          "group": "z_commands@9"
+        }
+      ],
       "view/title": [
         {
           "command": "projectManagerDeepJson.addProject",
@@ -116,6 +130,10 @@
         },
         {
           "command": "projectManagerDeepJson.openJsonFolder",
+          "when": "view == projectManagerDeepJson"
+        },
+        {
+          "command": "projectManagerDeepJson.refresh",
           "when": "view == projectManagerDeepJson"
         }
       ],

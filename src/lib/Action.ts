@@ -6,6 +6,7 @@ import SettingsProvider from "./SettingsProvider";
 import { getProjectsJsonUri, replaceZettai } from "./Util";
 import { join } from "path";
 import { json } from "stream/consumers";
+import * as util from './Util';
 
 
 export async function openWindowNew(item: DeepJsonItem) {
@@ -112,4 +113,8 @@ async function createName(treeView: DeepJsonProvider, treeItem: DeepJsonItem): P
     }
 
     return renameKey;
+}
+
+export async function addToPMDJ(treeView: DeepJsonProvider, uri: vscode.Uri) {
+    treeView.addProject(uri);
 }

@@ -2,9 +2,11 @@
 
 All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
 
+
 ## 2022/10/08
 
 * implement menu
+* add function to explorer menu
 
 ## 2022/10/02
 

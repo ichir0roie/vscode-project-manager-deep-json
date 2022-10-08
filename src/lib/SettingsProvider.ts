@@ -82,8 +82,14 @@ export default class SettingsProvider extends JsonProvider {
     async saveProjects(projects: any) {
         await this.writeJsonc(this.projectDictUri, projects);
     }
-    async addProject() {
-        let filePath = util.getRootPath();
+    async addProject(uri: vscode.Uri | undefined = undefined) {
+        let filePath: string | undefined = undefined;
+        if (uri === undefined) {
+            filePath = util.getRootPath();
+
+        } else {
+            filePath = uri.fsPath;
+        }
         if (filePath === undefined) {
             return;
         }
