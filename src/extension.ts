@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 // import { projectManagerDeepJsonProvider } from './lib/projectManagerDeepJsonProvider';
 
 
-import { openProjectsSettings, openWindowNew, openWindowThis, renameItem } from './lib/Action';
+import { addDict, addList, deleteItem, openProjectsSettings, openWindowNew, openWindowThis, renameItem } from './lib/Action';
 
 import { DeepJsonItem, DeepJsonProvider } from './lib/DeepJsonProvider';
 import SettingsProvider from './lib/SettingsProvider';
@@ -45,8 +45,30 @@ export async function activate(context: vscode.ExtensionContext) {
 			renameItem(treeView, treeItem);
 		}
 	);
+	context.subscriptions.push(disposable);
 
-	//TODO other method delete , create and create
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.createList",
+		(treeItem: DeepJsonItem) => {
+			addList(treeView, treeItem);
+		}
+	);
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.createDict",
+		(treeItem: DeepJsonItem) => {
+			addDict(treeView, treeItem);
+		}
+	);
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.deleteItem",
+		(treeItem: DeepJsonItem) => {
+			deleteItem(treeView, treeItem);
+		}
+	);
+	context.subscriptions.push(disposable);
+
+
 
 	vscode.workspace.onDidSaveTextDocument((e) => {
 		if (e.uri.fsPath === getProjectsJsonUri(context).fsPath) {

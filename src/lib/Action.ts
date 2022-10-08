@@ -42,9 +42,8 @@ export function openProjectsSettings(context: vscode.ExtensionContext, folder: b
 }
 
 export async function renameItem(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
-    //TODO show inputbox
 
-    const renameKey = await vscode.window.showInputBox();
+    const renameKey = await createName(treeView, treeItem);
     if (renameKey === undefined) { return; }
 
     let state = vscode.TreeItemCollapsibleState.Collapsed;
@@ -53,13 +52,64 @@ export async function renameItem(treeView: DeepJsonProvider, treeItem: DeepJsonI
     }
     if (treeItem.parent !== undefined) {
         delete treeItem.parent?.childrenJsonValue[treeItem.key];
-        treeItem.parent.childrenJsonValue[renameKey]=treeItem.childrenJsonValue;
+        treeItem.parent.childrenJsonValue[renameKey] = treeItem.childrenJsonValue;
         treeView._onDidChangeTreeData.fire(new Array(treeItem.parent));
     } else {
         delete treeView.projects[treeItem.key];
-        treeView.projects[renameKey]=treeItem.childrenJsonValue;
+        treeView.projects[renameKey] = treeItem.childrenJsonValue;
         treeView._onDidChangeTreeData.fire(undefined);
     }
-    
+
+    treeView.saveProjects();
+
 }
 
+export async function deleteItem(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
+    if (treeItem.parent === undefined) {
+        delete treeView.projects[treeItem.key];
+        treeView._onDidChangeTreeData.fire(undefined);
+    } else {
+        delete treeItem.parent?.childrenJsonValue[treeItem.key];
+        treeView._onDidChangeTreeData.fire(new Array(treeItem.parent));
+    }
+    treeView.saveProjects();
+}
+
+export async function addList(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
+    const renameKey = await vscode.window.showInputBox();
+    if (renameKey === undefined) { return; }
+
+    if (typeof treeItem.childrenJsonValue === "object") {
+        treeItem.childrenJsonValue[renameKey] = [];
+        treeItem.initializeInfo();
+    }
+    treeView._onDidChangeTreeData.fire(new Array(treeItem));
+    treeView.saveProjects();
+}
+
+export async function addDict(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
+    const renameKey = await vscode.window.showInputBox();
+    if (renameKey === undefined) { return; }
+
+    if (typeof treeItem.childrenJsonValue === "object") {
+        treeItem.childrenJsonValue[renameKey] = {};
+        treeItem.initializeInfo();
+    }
+    treeView._onDidChangeTreeData.fire(new Array(treeItem));
+    treeView.saveProjects();
+}
+
+async function createName(treeView: DeepJsonProvider, treeItem: DeepJsonItem): Promise<string | undefined> {
+    const renameKey = await vscode.window.showInputBox();
+    if (renameKey === undefined || renameKey === "") { return undefined; }
+
+    if (treeItem.parent === undefined) {
+        if (renameKey in treeView.projects) {
+            return undefined;
+        }
+    } else if (renameKey in treeItem.parent?.childrenJsonValue) {
+        return undefined;
+    }
+
+    return renameKey;
+}

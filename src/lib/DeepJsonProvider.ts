@@ -229,7 +229,7 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   }
 
   // TODO paste path to add project
-  
+
 
   // TODO copy path and add project form meny
 
@@ -244,10 +244,12 @@ export class DeepJsonItem extends vscode.TreeItem {
   state = vscode.TreeItemCollapsibleState.None;
   rootOpenPath: string | undefined;
   parent: DeepJsonItem | undefined;
+  key: string;
+  label: any;
   constructor(
     currentPath: string,
     state: vscode.TreeItemCollapsibleState,
-    public readonly key: string,
+    key: string,
     childrenJsonValue: any,
     parent: DeepJsonItem | undefined
   ) {
@@ -255,33 +257,40 @@ export class DeepJsonItem extends vscode.TreeItem {
     this.state = state;
     this.currentPath = currentPath;
     this.parent = parent;
+    this.childrenJsonValue = childrenJsonValue;
+    this.key = key;
 
-    if (typeof childrenJsonValue === "string") {
-      this.setInfo(childrenJsonValue, childrenJsonValue, childrenJsonValue);
-    } else if (Array.isArray(childrenJsonValue)) {
+    // this.tooltip="tooltip";
+    // this.description="description";
+    this.initializeInfo();
+  }
+
+  initializeInfo() {
+
+    if (typeof this.childrenJsonValue === "string") {
+      this.setInfo(this.childrenJsonValue, this.childrenJsonValue, this.childrenJsonValue);
+    } else if (Array.isArray(this.childrenJsonValue)) {
       let desc = "";
-      childrenJsonValue.forEach((line: string) => {
+      this.childrenJsonValue.forEach((line: string) => {
         desc += line.split("\\").join("/") + "\n";
       });
-      this.setInfo(childrenJsonValue, " : " + childrenJsonValue.length + " files", desc);
-    } else if (typeof childrenJsonValue === "object") {
+      this.setInfo(this.childrenJsonValue, " : " + this.childrenJsonValue.length + " files", desc);
+    } else if (typeof this.childrenJsonValue === "object") {
       // folder have root
 
       // folder
       let desc = "";
-      for (key in childrenJsonValue) {
-        const value = childrenJsonValue[key];
-        desc += key + '\n';
+      for (this.key in this.childrenJsonValue) {
+        const value = this.childrenJsonValue[this.key];
+        desc += this.key + '\n';
       }
       // this.setInfo(value," > "+map.size,desc);
-      this.setInfo(childrenJsonValue, undefined, desc);
+      this.setInfo(this.childrenJsonValue, undefined, desc);
     } else {
       // ???
       this.setInfo(undefined, undefined, undefined);
     }
 
-    // this.tooltip="tooltip";
-    // this.description="description";
   }
 
   setInfo(value: any, description: string | undefined, tooltip: string | undefined) {
