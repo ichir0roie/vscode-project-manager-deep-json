@@ -2,6 +2,10 @@
 
 All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
 
+## 2022/10/10
+
+* 同じフォルダに入れると消えるバグ対策
+* パス取得機能強化
 
 ## 2022/10/08
 

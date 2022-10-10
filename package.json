@@ -80,6 +80,10 @@
       {
         "command": "projectManagerDeepJson.addTo",
         "title": "Add To PMDJ"
+      },
+      {
+        "command": "projectManagerDeepJson.getPath",
+        "title": "Get path from item"
       }
     ],
     "viewsContainers": {
@@ -157,6 +161,11 @@
           "command": "projectManagerDeepJson.createList",
           "when": "view == projectManagerDeepJson",
           "group": "1_main@4"
+        },
+        {
+          "command": "projectManagerDeepJson.getPath",
+          "when": "view == projectManagerDeepJson",
+          "group": "1_main@5"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",

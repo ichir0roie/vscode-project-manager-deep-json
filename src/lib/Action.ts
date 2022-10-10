@@ -118,3 +118,8 @@ async function createName(treeView: DeepJsonProvider, treeItem: DeepJsonItem): P
 export async function addToPMDJ(treeView: DeepJsonProvider, uri: vscode.Uri) {
     treeView.addProject(uri);
 }
+
+
+export async function getPathFromItem(treeItem: DeepJsonItem) {
+    vscode.env.clipboard.writeText(treeItem.childrenJsonValue);
+}

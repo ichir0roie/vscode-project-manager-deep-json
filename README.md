@@ -1,5 +1,7 @@
 # ProjectManagerDeepJson README
 
+![](https://github.com/ichir0roie/vscode-project-manager-deep-json/blob/main/.mdImages/README/20221008_183038.png)
+
 ## what
 
 project manager by deep layer tree view.
@@ -8,13 +10,9 @@ jsonで記述された自由なツリー構造でパスを管理できる。
 
 # How To Use
 
-![](.mdImages/README/20221008_183038.png)
-
 ## JSONCでプロジェクト構成
 
 メニューの設定ボタンから編集。
-![](https://github.com/ichir0roie/vscode-project-manager-deep-json/blob/main/.mdImages/README/20220819_172500.png)
-
 
 + Drag And Drop を実装！
   + 要素の移動を行える。

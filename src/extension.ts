@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 // import { projectManagerDeepJsonProvider } from './lib/projectManagerDeepJsonProvider';
 
 
-import { addDict, addList, addToPMDJ, deleteItem, openProjectsSettings, openWindowNew, openWindowThis, renameItem } from './lib/Action';
+import { addDict, addList, addToPMDJ, deleteItem, getPathFromItem, openProjectsSettings, openWindowNew, openWindowThis, renameItem } from './lib/Action';
 
 import { DeepJsonItem, DeepJsonProvider } from './lib/DeepJsonProvider';
 import SettingsProvider from './lib/SettingsProvider';
@@ -78,6 +78,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	disposable = vscode.commands.registerCommand("projectManagerDeepJson.addTo",
 		(uri: vscode.Uri) => {
 			addToPMDJ(treeView, uri);
+		}
+	);
+	context.subscriptions.push(disposable);
+
+
+	disposable = vscode.commands.registerCommand("projectManagerDeepJson.getPath",
+		(treeItem: DeepJsonItem) => {
+			getPathFromItem(treeItem);
 		}
 	);
 	context.subscriptions.push(disposable);

@@ -143,16 +143,22 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
     let rootRemove: boolean = false;
     let fireTarget = new Array<DeepJsonItem | undefined>();
     source.forEach(dragItem => {
-
+      // ignore
       if (target === undefined && dragItem.parent === undefined) {
         return;
-      } else if (target === undefined) {
+      } else if (dragItem.parent?.currentPath === target?.currentPath) {
+        return;
+      }
+
+      // process
+      if (target === undefined) {
         this.projects[dragItem.key] = dragItem.childrenJsonValue;
       } else if (Array.isArray(target.childrenJsonValue) && typeof dragItem.childrenJsonValue === "string") {
         target.childrenJsonValue.push(dragItem.childrenJsonValue);
       } else if (typeof target.childrenJsonValue === "object") {
         target.childrenJsonValue[dragItem.key] = dragItem.childrenJsonValue;
       } else {
+        // finally
         return;
       }
 
@@ -216,20 +222,6 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
 
 
 
-  private addList(treeItem: DeepJsonItem) {
-    // if (typeof treeItem.childrenJsonValue === "string") {
-    // } else if (typeof treeItem.childrenJsonValue === "object") {
-    // } else if (Array.isArray(treeItem.childrenJsonValue)){
-    // }
-    if (typeof treeItem.childrenJsonValue === "object") {
-      treeItem.childrenJsonValue[""] = [];
-    }
-  }
-
-  // TODO paste path to add project
-
-
-  // TODO copy path and add project form meny
 
 }
 
