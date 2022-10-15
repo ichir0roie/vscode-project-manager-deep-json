@@ -2,12 +2,9 @@ import { DeepJsonItem, DeepJsonProvider } from "./DeepJsonProvider";
 
 import * as vscode from 'vscode';
 
-import SettingsProvider from "./SettingsProvider";
 import { getProjectsJsonUri, replaceZettai } from "./Util";
-import { join } from "path";
-import { json } from "stream/consumers";
-import * as util from './Util';
 
+import { exec } from "child_process";
 
 export async function openWindowNew(item: DeepJsonItem) {
     openWindow(item, true);
@@ -137,3 +134,26 @@ export async function getPathFromItem(treeItem: DeepJsonItem) {
         return;
     }
 }
+
+export async function addProjectFromPath(treeView: DeepJsonProvider) {
+    const res = await vscode.window.showInputBox();
+    if (res === undefined) { return; }
+
+    treeView.addProject(vscode.Uri.file(res));
+
+}
+
+export async function revealInFileExplorer(treeItem: DeepJsonItem) {
+    const obj = treeItem.childrenJsonValue;
+    if (typeof obj === "string") {
+        exec(`start "" "${obj}"`);
+    } else if (Array.isArray(obj)) {
+        obj.forEach(line => {
+            exec(`start "" "${line}"`);
+        });
+    } else {
+        vscode.window.showInformationMessage("can open in File Explorer");
+        return;
+    }
+}
+

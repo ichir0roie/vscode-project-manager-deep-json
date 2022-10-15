@@ -21,8 +21,8 @@
         "command": "projectManagerDeepJson.openJson",
         "title": "Open Projects Json File",
         "icon": {
-          "light": "resources/vscode-icons/icons/light/settings.svg",
-          "dark": "resources/vscode-icons/icons/dark/settings.svg"
+          "light": "resources/vscode-icons/icons/light/json.svg",
+          "dark": "resources/vscode-icons/icons/dark/json.svg"
         }
       },
       {
@@ -35,7 +35,7 @@
       },
       {
         "command": "projectManagerDeepJson.openWindowThis",
-        "title": "Open Project With This Window",
+        "title": "Open Project In This Window",
         "icon": {
           "light": "resources/vscode-icons/icons/light/window.svg",
           "dark": "resources/vscode-icons/icons/dark/window.svg"
@@ -43,7 +43,7 @@
       },
       {
         "command": "projectManagerDeepJson.openWindowNew",
-        "title": "Open Project With New Window",
+        "title": "Open Project In New Window",
         "icon": {
           "light": "resources/vscode-icons/icons/light/multiple-windows.svg",
           "dark": "resources/vscode-icons/icons/dark/multiple-windows.svg"
@@ -58,8 +58,16 @@
         }
       },
       {
+        "command": "projectManagerDeepJson.addProjectFromInput",
+        "title": "This Window Add Project From Input",
+        "icon": {
+          "light": "resources/vscode-icons/icons/light/terminal.svg",
+          "dark": "resources/vscode-icons/icons/dark/terminal.svg"
+        }
+      },
+      {
         "command": "projectManagerDeepJson.refresh",
-        "title": "Refresh"
+        "title": "Refresh Extension"
       },
       {
         "command": "projectManagerDeepJson.renameItem",
@@ -76,6 +84,10 @@
       {
         "command": "projectManagerDeepJson.createList",
         "title": "Create List"
+      },
+      {
+        "command": "projectManagerDeepJson.revealInFileExplorer",
+        "title": "Reveal in File Explorer"
       },
       {
         "command": "projectManagerDeepJson.addTo",
@@ -128,6 +140,11 @@
           "group": "navigation"
         },
         {
+          "command": "projectManagerDeepJson.addProjectFromInput",
+          "when": "view == projectManagerDeepJson",
+          "group": "navigation"
+        },
+        {
           "command": "projectManagerDeepJson.openJson",
           "when": "view == projectManagerDeepJson",
           "group": "navigation"
@@ -145,37 +162,42 @@
         {
           "command": "projectManagerDeepJson.renameItem",
           "when": "view == projectManagerDeepJson",
-          "group": "1_main@1"
+          "group": "1@1"
         },
         {
           "command": "projectManagerDeepJson.deleteItem",
           "when": "view == projectManagerDeepJson",
-          "group": "1_main@2"
+          "group": "1@2"
         },
         {
           "command": "projectManagerDeepJson.createDict",
           "when": "view == projectManagerDeepJson",
-          "group": "1_main@3"
+          "group": "2@3"
         },
         {
           "command": "projectManagerDeepJson.createList",
           "when": "view == projectManagerDeepJson",
-          "group": "1_main@4"
+          "group": "2@4"
         },
         {
           "command": "projectManagerDeepJson.getPath",
           "when": "view == projectManagerDeepJson",
-          "group": "1_main@5"
+          "group": "3@1"
+        },
+        {
+          "command": "projectManagerDeepJson.revealInFileExplorer",
+          "when": "view == projectManagerDeepJson",
+          "group": "3@2"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",
           "when": "view == projectManagerDeepJson",
-          "group": "2_sub@1"
+          "group": "4@1"
         },
         {
           "command": "projectManagerDeepJson.openWindowThis",
           "when": "view == projectManagerDeepJson",
-          "group": "2_sub@2"
+          "group": "4@2"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",
