@@ -121,5 +121,19 @@ export async function addToPMDJ(treeView: DeepJsonProvider, uri: vscode.Uri) {
 
 
 export async function getPathFromItem(treeItem: DeepJsonItem) {
-    vscode.env.clipboard.writeText(treeItem.childrenJsonValue);
+    const obj = treeItem.childrenJsonValue;
+    if (typeof obj === "string") {
+        vscode.env.clipboard.writeText(obj);
+    } else if (typeof obj === "object") {
+        vscode.env.clipboard.writeText(JSON.stringify(obj));
+    } else if (Array.isArray(obj)) {
+        let str = "";
+        obj.forEach(line => {
+            str += line + "\n";
+        });
+        vscode.env.clipboard.writeText(JSON.stringify(str));
+    } else {
+        vscode.window.showInformationMessage("can not get path");
+        return;
+    }
 }
