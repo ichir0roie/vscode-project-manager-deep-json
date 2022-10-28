@@ -55,34 +55,6 @@ jsonで記述された自由なツリー構造でパスを管理できる。
   + new window or this window
 
 
-# Todo
-
-## Next
-
-## Important
-
-
-## Maybe later.
-
-+ 各パターンのオプション化
-
-## Don't have to
-
-+ Explorer右クリックで追加
-+ drag and drop
-+ ssh
-+ docker
-+ New Project
-
-## difficult
-
-+ selection clear after selected
-
-
-
-
-
-
 
 
 

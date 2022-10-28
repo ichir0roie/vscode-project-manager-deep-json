@@ -39,6 +39,7 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
   // We want to use an array as the event type, but the API for this is currently being finalized. Until it's finalized, use any.
   public onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
 
+  // TODO support ssh command
   onDidChangeSelection(elem: readonly DeepJsonItem[]) {
     if (elem.length <= 0) { return; }
     const targetItem: DeepJsonItem = elem[0];
@@ -209,7 +210,6 @@ export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, 
     this._onDidChangeTreeData.fire(new Array(treeItem));
   }
 
-  // TODO use
   public deleteItem(treeItem: DeepJsonItem) {
     let parent = treeItem.parent;
     if (parent === undefined) {
