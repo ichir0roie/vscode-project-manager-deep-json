@@ -1,6 +1,8 @@
 # Change Log
 
-All notable changes to the "ProjectManagerDeepJson" extension will be documented in this file.
+## 2023/01/16
+
+* Reveal in File Explorer action added to inline icon
 
 ## 2022/10/10
 

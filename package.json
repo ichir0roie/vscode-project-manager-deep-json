@@ -87,7 +87,11 @@
       },
       {
         "command": "projectManagerDeepJson.revealInFileExplorer",
-        "title": "Reveal in File Explorer"
+        "title": "Reveal in File Explorer",
+        "icon": {
+          "light": "resources/vscode-icons/icons/light/folder.svg",
+          "dark": "resources/vscode-icons/icons/dark/folder.svg"
+        }
       },
       {
         "command": "projectManagerDeepJson.addTo",
@@ -208,6 +212,11 @@
           "command": "projectManagerDeepJson.openWindowThis",
           "when": "view == projectManagerDeepJson",
           "group": "inline@2"
+        },
+        {
+          "command": "projectManagerDeepJson.revealInFileExplorer",
+          "when": "view == projectManagerDeepJson",
+          "group": "inline@3"
         }
       ]
     }
