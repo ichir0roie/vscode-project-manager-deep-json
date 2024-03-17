@@ -11,6 +11,8 @@ import { DeepJsonItem, DeepJsonProvider } from './lib/DeepJsonProvider';
 import SettingsProvider from './lib/SettingsProvider';
 import { getProjectsJsonUri } from './lib/Util';
 
+import { getWebviewContent } from "./lib/webView/ui/sample";
+
 let treeView: DeepJsonProvider;
 
 // this method is called when your extension is activated
@@ -104,6 +106,34 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(disposable);
 
+	// https://code.visualstudio.com/api/extension-guides/webview
+	context.subscriptions.push(
+		vscode.commands.registerCommand('catCoding.start', () => {
+			// Create and show a new webview
+			const panel = vscode.window.createWebviewPanel(
+				'catCoding', // Identifies the type of the webview. Used internally
+				'Cat Coding', // Title of the panel displayed to the user
+				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+				{} // Webview options. More on these later.
+			);
+
+
+			let iteration = 0;
+			const updateWebview = () => {
+				const cat = iteration++ % 2 ? 'Compiling Cat' : 'Coding Cat';
+				panel.title = cat;
+				panel.webview.html = getWebviewContent(cat);
+			};
+
+			// Set initial content
+			updateWebview();
+
+			// And schedule updates to the content every second
+			setInterval(updateWebview, 1000);
+		})
+	);
+	context.subscriptions.push(disposable);
+
 
 
 	vscode.workspace.onDidSaveTextDocument((e) => {
@@ -111,6 +141,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			treeView = new DeepJsonProvider(context);
 		}
 	});
+
+
 }
 
 // this method is called when your extension is deactivated
