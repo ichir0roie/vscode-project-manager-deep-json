@@ -5,10 +5,10 @@
  * @format
  */
 
-import React from "react";
+import React, { useState } from "react";
 import type { PropsWithChildren } from "react";
 import {
-  Button,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -26,6 +26,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from "react-native/Libraries/NewAppScreen";
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -64,15 +66,55 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  async function testSave(value: string) {
+    try {
+      await AsyncStorage.setItem('my-key', value);
+    } catch (e) {
+      // saving error
+    }
+  }
+
+  async function testLoad() {
+    try {
+      const value = await AsyncStorage.getItem('my-key');
+      console.log(value)
+      if (value !== null) {
+        setLoadText(value)
+        // value previously stored
+      }
+    } catch (e) {
+      // error reading value
+    }
+  }
+
+  const [text, setText] = useState("")
+  function onPress() {
+    console.log(text)
+    testSave(text)
+  }
+  const [loadText, setLoadText] = useState("")
+
+  function onPressLoad() {
+    testLoad()
+  }
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
-        barStyle={isDarkMode ? "light-content" : "dark-content"}
-        backgroundColor={backgroundStyle.backgroundColor}
+      // barStyle={isDarkMode ? "light-content" : "dark-content"}
+      // backgroundColor={backgroundStyle.backgroundColor}
       />
 
-      <TextInput />
-      <Button title="test button" />
+      <TextInput value={text} onChangeText={setText} style={styles.text} />
+      <Pressable onPress={onPress}>
+        <Text style={styles.button}>test button</Text>
+      </Pressable>
+
+      <TextInput value={loadText} style={styles.text} />
+
+      <Pressable onPress={onPressLoad}>
+        <Text style={styles.button}>load</Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -96,6 +138,10 @@ const styles = StyleSheet.create({
   },
   button: {
     color: "#000",
+  },
+  text: {
+    color: "#000",
+    backgroundColor: "#fff"
   }
 });
 
