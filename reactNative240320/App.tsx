@@ -27,7 +27,10 @@ import {
   ReloadInstructions,
 } from "react-native/Libraries/NewAppScreen";
 
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { readFile, writeFile } from "./module/testExplorer";
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -98,6 +101,15 @@ function App(): React.JSX.Element {
     testLoad()
   }
 
+  async function onPressWriteFile() {
+    await writeFile({
+      "key": "testaaa"
+    })
+    const res = await readFile()
+    const data = res["key"]
+    console.dirxml(data)
+  }
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -114,6 +126,9 @@ function App(): React.JSX.Element {
 
       <Pressable onPress={onPressLoad}>
         <Text style={styles.button}>load</Text>
+      </Pressable>
+      <Pressable onPress={onPressWriteFile}>
+        <Text style={styles.button}>write file</Text>
       </Pressable>
     </SafeAreaView>
   );
