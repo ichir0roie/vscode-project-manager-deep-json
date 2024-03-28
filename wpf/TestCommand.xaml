@@ -1,0 +1,29 @@
+﻿<Window x:Class="wpf.TestCommand"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpf"
+        mc:Ignorable="d"
+        Title="TestCommand" Height="450" Width="800">
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Button Grid.Column="1" Grid.Row="1" Name="testButton1" Click="testButton1_Click">a</Button>
+        <Button Grid.Column="1" Grid.Row="2" Name="testButton2" Click="testButton2_Click">b</Button>
+        <TextBox TextWrapping="Wrap" Text="TextBox" Grid.Column="0" Grid.Row="0" Name="testText"/>
+        <TextBox TextWrapping="Wrap" Text="TextBox" Grid.Column="0" Grid.Row="1" Name="testText2"/>
+
+
+    </Grid>
+</Window>

@@ -7,22 +7,5 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Button Grid.Column="1" Grid.Row="1" Name="testButton1" Click="testButton1_Click">a</Button>
-        <Button Grid.Column="1" Grid.Row="2" Name="testButton2" Click="testButton2_Click">b</Button>
-        <TextBox TextWrapping="Wrap" Text="TextBox" Grid.Column="0" Grid.Row="0" Name="testText"/>
-        <TextBox TextWrapping="Wrap" Text="TextBox" Grid.Column="0" Grid.Row="1" Name="testText2"/>
-
-
     </Grid>
 </Window>

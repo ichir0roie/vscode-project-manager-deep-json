@@ -21,17 +21,5 @@ namespace wpf
             InitializeComponent();
         }
 
-        private void testButton1_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(
-                testText.Text,
-                testText2.Text
-                );
-        }
-
-        private void testButton2_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }
