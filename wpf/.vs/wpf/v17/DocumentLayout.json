@@ -1,22 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "W:\\github\\project-manager-deep-json-vscode\\wpf\\",
+  "WorkspaceRootPath": "D:\\github\\vscode-project-manager-deep-json\\wpf\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|w:\\github\\project-manager-deep-json-vscode\\wpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|d:\\github\\vscode-project-manager-deep-json\\wpf\\treewindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|solutionrelative:treewindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|w:\\github\\project-manager-deep-json-vscode\\wpf\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|d:\\github\\vscode-project-manager-deep-json\\wpf\\treewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|solutionrelative:treewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|w:\\github\\project-manager-deep-json-vscode\\wpf\\testcommand.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|solutionrelative:testcommand.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|w:\\github\\project-manager-deep-json-vscode\\wpf\\testcommand.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|solutionrelative:testcommand.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|d:\\github\\vscode-project-manager-deep-json\\wpf\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{163C6B43-7F27-4ED9-84DC-3F4D678A4812}|wpf.csproj|solutionrelative:app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,56 +22,43 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "TestCommand.xaml.cs",
-              "DocumentMoniker": "W:\\github\\project-manager-deep-json-vscode\\wpf\\TestCommand.xaml.cs",
-              "RelativeDocumentMoniker": "TestCommand.xaml.cs",
-              "ToolTip": "W:\\github\\project-manager-deep-json-vscode\\wpf\\TestCommand.xaml.cs",
-              "RelativeToolTip": "TestCommand.xaml.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACQAAAAJAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-27T12:36:33.158Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "TestCommand.xaml",
-              "DocumentMoniker": "W:\\github\\project-manager-deep-json-vscode\\wpf\\TestCommand.xaml",
-              "RelativeDocumentMoniker": "TestCommand.xaml",
-              "ToolTip": "W:\\github\\project-manager-deep-json-vscode\\wpf\\TestCommand.xaml",
-              "RelativeToolTip": "TestCommand.xaml",
+              "Title": "App.xaml",
+              "DocumentMoniker": "D:\\github\\vscode-project-manager-deep-json\\wpf\\App.xaml",
+              "RelativeDocumentMoniker": "App.xaml",
+              "ToolTip": "D:\\github\\vscode-project-manager-deep-json\\wpf\\App.xaml",
+              "RelativeToolTip": "App.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-03-27T12:36:13.626Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "W:\\github\\project-manager-deep-json-vscode\\wpf\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "W:\\github\\project-manager-deep-json-vscode\\wpf\\MainWindow.xaml.cs",
-              "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-27T12:34:04.447Z",
+              "WhenOpened": "2024-03-28T02:48:46.437Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "W:\\github\\project-manager-deep-json-vscode\\wpf\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "W:\\github\\project-manager-deep-json-vscode\\wpf\\MainWindow.xaml",
-              "RelativeToolTip": "MainWindow.xaml",
+              "Title": "TreeWindow.xaml.cs",
+              "DocumentMoniker": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml.cs",
+              "RelativeDocumentMoniker": "TreeWindow.xaml.cs",
+              "ToolTip": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml.cs",
+              "RelativeToolTip": "TreeWindow.xaml.cs",
+              "ViewState": "AQIAACAAAAAAAAAAAAAgwEUAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-28T01:32:55.133Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TreeWindow.xaml",
+              "DocumentMoniker": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml",
+              "RelativeDocumentMoniker": "TreeWindow.xaml",
+              "ToolTip": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml",
+              "RelativeToolTip": "TreeWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-03-27T12:34:03.052Z",
+              "WhenOpened": "2024-03-28T01:32:53.902Z",
               "EditorCaption": ""
             }
           ]
