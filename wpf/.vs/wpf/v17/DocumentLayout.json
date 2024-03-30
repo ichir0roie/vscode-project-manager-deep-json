@@ -33,8 +33,7 @@
               "ToolTip": "D:\\github\\vscode-project-manager-deep-json\\wpf\\App.xaml",
               "RelativeToolTip": "App.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-03-28T02:48:46.437Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-28T02:48:46.437Z"
             },
             {
               "$type": "Document",
@@ -42,9 +41,9 @@
               "Title": "TreeWindow.xaml.cs",
               "DocumentMoniker": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml.cs",
               "RelativeDocumentMoniker": "TreeWindow.xaml.cs",
-              "ToolTip": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml.cs",
-              "RelativeToolTip": "TreeWindow.xaml.cs",
-              "ViewState": "AQIAACAAAAAAAAAAAAAgwEUAAAAMAAAA",
+              "ToolTip": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml.cs*",
+              "RelativeToolTip": "TreeWindow.xaml.cs*",
+              "ViewState": "AQIAACcAAAAAAAAAAADwvzkAAAAlAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-28T01:32:55.133Z",
               "EditorCaption": ""
@@ -58,8 +57,7 @@
               "ToolTip": "D:\\github\\vscode-project-manager-deep-json\\wpf\\TreeWindow.xaml",
               "RelativeToolTip": "TreeWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-03-28T01:32:53.902Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-28T01:32:53.902Z"
             }
           ]
         }

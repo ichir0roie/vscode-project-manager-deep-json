@@ -48,13 +48,14 @@ namespace wpf
         {
 
             JsonObject data = getDictionary();
+            setTree(treeView.Items, data);
 
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 5; i++)
             {
                 MyTreeViewItem parentItem = new MyTreeViewItem();
                 parentItem.Header = String.Format("testextestext{0}", i);
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < 5; j++)
                 {
                     MyTreeViewItem childItem = new MyTreeViewItem();
                     childItem.Header = String.Format("testextestext{0},{1}", i, j);
@@ -64,18 +65,22 @@ namespace wpf
             }
         }
 
-        private MyTreeViewItem getTree(JsonObject jo)
+        private void setTree(ItemCollection parentItems, JsonObject data)
         {
-            MyTreeViewItem item= new MyTreeViewItem();
-            
-            
-
-            return item;
+         foreach(var pair in data)
+            {
+                Debug.WriteLine(pair);
+                var item=new MyTreeViewItem();
+                item.Header = pair.Key;
+                parentItems.Add(item);
+            }   
         }
 
         private JsonObject getDictionary()
         {
             JsonObject data = new JsonObject();
+            data["a"] = "b";
+            data["c"] = "d";
             
             return data;
         }
