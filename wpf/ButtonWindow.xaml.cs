@@ -17,9 +17,9 @@ namespace wpf
     /// <summary>
     /// Interaction logic for TestCommand.xaml
     /// </summary>
-    public partial class TestCommand : Window
+    public partial class ButtonWindow : Window
     {
-        public TestCommand()
+        public ButtonWindow()
         {
             InitializeComponent();
         }
