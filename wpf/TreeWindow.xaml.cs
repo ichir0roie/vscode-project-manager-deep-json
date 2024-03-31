@@ -23,6 +23,7 @@ namespace wpf
     /// </summary>
     public partial class TreeWindow : Window
     {
+        DataManager dm;
         public TreeWindow()
         {
             InitializeComponent();
@@ -38,7 +39,8 @@ namespace wpf
             //myCanvas.Children.Add(parentPanel);
             //myCanvas.Children.Add(textBlock);
 
-
+            dm= new DataManager();
+            dm.load();
 
             generateTree();
         }
@@ -46,7 +48,7 @@ namespace wpf
 
         private void generateTree()
         {
-
+            
             JsonObject data = getDictionary();
             setTree(treeView.Items, data);
 
@@ -102,19 +104,12 @@ namespace wpf
             e.Handled = true;
             //TODO horizontal
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Window w = new AddItem();
+            w.Show();
+        }
     }
 
-    class MyTreeViewItem : TreeViewItem
-    {
-        protected override void OnSelected(RoutedEventArgs e)
-        {
-            base.OnSelected(e);
-            base.IsSelected = false;
-        }
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-        {
-            base.OnMouseLeftButtonDown(e);
-            base.IsExpanded=!base.IsExpanded;
-        }
-    }
 }

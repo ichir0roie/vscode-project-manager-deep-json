@@ -19,6 +19,9 @@ namespace wpf
         public MainWindow()
         {
             InitializeComponent();
+
+
+            DataManager dataManager = new DataManager();
         }
 
     }

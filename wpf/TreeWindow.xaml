@@ -14,6 +14,10 @@
                    DockPanel.Dock="Top"
                  
                    ></TextBlock>
+        <Button
+            DockPanel.Dock="Top"
+            Height="30" Click="Button_Click"
+            >add window</Button>
         <ScrollViewer 
             PanningMode="Both"
             PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"
