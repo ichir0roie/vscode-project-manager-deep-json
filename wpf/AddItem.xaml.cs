@@ -19,23 +19,19 @@ namespace wpf
     /// </summary>
     public partial class AddItem : Window
     {
+        MyTreeViewItem item=new MyTreeViewItem();
+        MyTreeViewItem parentItem;
 
-        DataManager dm;
-
-        public AddItem()
+        public AddItem(MyTreeViewItem parent)
         {
             InitializeComponent();
-            dm = new DataManager();
-            dm.load();
+            this.parentItem = parent;
         }
 
         private void add_Click(object sender, RoutedEventArgs e)
         {
-            MyTreeItemData item = new MyTreeItemData();
             item.Header = header.Text;
-            dm.data.Add(item);
-
-            dm.save();
+            parentItem.Items.Add(item);
         }
     }
 }

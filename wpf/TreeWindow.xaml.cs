@@ -40,7 +40,7 @@ namespace wpf
             //myCanvas.Children.Add(textBlock);
 
             dm= new DataManager();
-            dm.load();
+            //dm.loadTree(treeView.Items);
 
             generateTree();
         }
@@ -66,6 +66,8 @@ namespace wpf
                 treeView.Items.Add(parentItem);
             }
         }
+
+        
 
         private void setTree(ItemCollection parentItems, JsonObject data)
         {
@@ -105,10 +107,9 @@ namespace wpf
             //TODO horizontal
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
-            Window w = new AddItem();
-            w.Show();
+            dm.dumpTree(treeView.Items);
         }
     }
 

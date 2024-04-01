@@ -12,7 +12,8 @@ using System.Windows;
 
 namespace wpf
 {
-    class MyTreeViewItem : TreeViewItem
+
+    public class MyTreeViewItem : TreeViewItem
     {
         protected override void OnSelected(RoutedEventArgs e)
         {
@@ -21,15 +22,20 @@ namespace wpf
         }
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            base.OnMouseLeftButtonDown(e);
             base.IsExpanded = !base.IsExpanded;
+        }
+
+        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+        {
+            var w = new AddItem(this);
+            w.Show();
         }
     }
     class MyTreeItemData
     {
-        public string Header { get; set; } = "";
-        public List<MyTreeItemData> Items { get; set; }= new List<MyTreeItemData>();
-        public bool IsExpanded { get; set; } = false;
+        public string header { get; set; } = "";
+        public List<MyTreeItemData> items { get; set; }= new List<MyTreeItemData>();
+        public bool isExpanded { get; set; } = false;
     }
 
     class DataManager
@@ -55,7 +61,7 @@ namespace wpf
             }
         }
 
-        public void load()
+        public void loadTree(ItemCollection items)
         {
 
             if (!File.Exists(saveFile))
@@ -68,7 +74,24 @@ namespace wpf
             {
                 string j = fs.ReadToEnd();
                 data = JsonSerializer.Deserialize<List<MyTreeItemData>>(j);
+                foreach(var d in data)
+                {
+                    items.Add(loadItem(d));
+                }
             }
+        }
+
+        public MyTreeViewItem loadItem(MyTreeItemData itemData)
+        {
+            var item=new MyTreeViewItem();
+            item.Header = itemData.header;
+            item.IsExpanded = itemData.isExpanded;
+            foreach (var childData in itemData.items)
+            {
+                var child = loadItem(childData);
+                item.Items.Add(child);
+            }
+            return item;
         }
 
         public void dumpTree(ItemCollection treeViewItems)
@@ -82,9 +105,9 @@ namespace wpf
             foreach (TreeViewItem Item in treeViewItems)
             {
                 MyTreeItemData ItemData=new MyTreeItemData();
-                ItemData.Items = dumpItem(Item.Items);
-                ItemData.Header = Item.Header.ToString();
-                ItemData.IsExpanded = Item.IsExpanded;
+                ItemData.items = dumpItem(Item.Items);
+                ItemData.header = Item.Header.ToString();
+                ItemData.isExpanded = Item.IsExpanded;
 
                 ItemDataList.Add(ItemData);
             }

@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:wpf"
         mc:Ignorable="d"
-        Title="TreeWindow" Height="450" Width="800">
+        Title="TreeWindow" Height="450" Width="800"
+        Closed="Window_Closed"
+        >
     <DockPanel Background="Black"
         >
         <TextBlock x:Name="text" 
@@ -14,10 +16,6 @@
                    DockPanel.Dock="Top"
                  
                    ></TextBlock>
-        <Button
-            DockPanel.Dock="Top"
-            Height="30" Click="Button_Click"
-            >add window</Button>
         <ScrollViewer 
             PanningMode="Both"
             PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"
@@ -28,7 +26,6 @@
             SelectedItemChanged="treeView_SelectedItemChanged"
             />
         </ScrollViewer>
-
-
+        
     </DockPanel>
 </Window>
