@@ -4,16 +4,14 @@
   "description": "",
   "publisher": "ichir0roie",
   "repository": "https://github.com/ichir0roie/vscode-project-manager-deep-json",
-  "version": "4.11.0",
+  "version": "5.0.0",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onView:projectManagerDeepJson"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -100,11 +98,6 @@
       {
         "command": "projectManagerDeepJson.getPath",
         "title": "Get path from item"
-      },
-      {
-        "command": "catCoding.start",
-        "title": "Start new cat coding session",
-        "category": "Cat Coding"
       }
     ],
     "viewsContainers": {
@@ -124,17 +117,6 @@
         }
       ]
     },
-    "configuration": [
-      {
-        "title": "Project Manager Deep Json",
-        "properties": {
-          "projectManagerDeepJson.projects.backup": {
-            "type": "object",
-            "description": "project tree backup"
-          }
-        }
-      }
-    ],
     "menus": {
       "explorer/context": [
         {
@@ -180,47 +162,47 @@
         },
         {
           "command": "projectManagerDeepJson.createDict",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == folder",
           "group": "2@3"
         },
         {
           "command": "projectManagerDeepJson.createList",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == folder",
           "group": "2@4"
         },
         {
           "command": "projectManagerDeepJson.getPath",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == path",
           "group": "3@1"
         },
         {
           "command": "projectManagerDeepJson.revealInFileExplorer",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == path",
           "group": "3@2"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == path",
           "group": "4@1"
         },
         {
           "command": "projectManagerDeepJson.openWindowThis",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == path",
           "group": "4@2"
         },
         {
           "command": "projectManagerDeepJson.openWindowNew",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == path",
           "group": "inline@1"
         },
         {
           "command": "projectManagerDeepJson.openWindowThis",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == path",
           "group": "inline@2"
         },
         {
           "command": "projectManagerDeepJson.revealInFileExplorer",
-          "when": "view == projectManagerDeepJson",
+          "when": "view == projectManagerDeepJson && viewItem == path",
           "group": "inline@3"
         }
       ]
@@ -231,25 +213,21 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
+    "lint": "eslint src",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.2.0",
-    "@types/mocha": "^9.1.1",
-    "@types/node": "16.x",
-    "@types/vscode": "^1.70.0",
-    "@typescript-eslint/eslint-plugin": "^5.30.0",
-    "@typescript-eslint/parser": "^5.30.0",
-    "@vscode/test-electron": "^2.1.5",
-    "eslint": "^8.18.0",
-    "glob": "^8.0.3",
-    "install-vscode-extensions": "^1.0.0",
-    "mocha": "^10.0.0",
-    "typescript": "^4.7.4"
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.20.5",
+    "@types/vscode": "1.90",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.5",
+    "glob": "^11.1.0",
+    "mocha": "^11.8.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.1"
   },
   "dependencies": {
-    "jsonc": "^2.0.0",
-    "strip-json-trailing-commas": "^1.1.0"
+    "jsonc-parser": "^3.3.1"
   }
 }

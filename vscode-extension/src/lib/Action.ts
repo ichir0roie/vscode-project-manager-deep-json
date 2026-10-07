@@ -1,159 +1,84 @@
-import { DeepJsonItem, DeepJsonProvider } from "./DeepJsonProvider";
-
 import * as vscode from 'vscode';
 
-import { getProjectsJsonUri, replaceZettai } from "./Util";
+import { DeepJsonItem, DeepJsonProvider } from "./DeepJsonProvider";
+import { getProjectsJsonUri } from "./Util";
 
-import { exec } from "child_process";
-
-export async function openWindowNew(item: DeepJsonItem) {
-    openWindow(item, true);
+function pathsOf(item: DeepJsonItem): string[] {
+    if (typeof item.value === "string") { return [item.value]; }
+    if (Array.isArray(item.value)) { return item.value; }
+    return [];
 }
-export async function openWindowThis(item: DeepJsonItem) {
-    openWindow(item, false);
-}
-async function openWindow(item: DeepJsonItem, forceNewWindow: boolean) {
 
-    if (typeof item.childrenJsonValue === "string") {
-        openWindowExecute(item.childrenJsonValue, forceNewWindow);
-    } else if (Array.isArray(item.childrenJsonValue)) {
-        item.childrenJsonValue.forEach(async (path: string) => {
-            openWindowExecute(path, true);
-        });
-    } else if (item.rootOpenPath !== undefined) {
-        openWindowExecute(item.rootOpenPath, forceNewWindow);
+export async function openWindow(item: DeepJsonItem, forceNewWindow: boolean) {
+    const paths = pathsOf(item);
+    if (paths.length === 0) {
+        vscode.window.showInformationMessage("This item has no path.");
+        return;
     }
-    // let success=await vscode.commands.executeCommand("vscode.openFolder");
+    for (const path of paths) {
+        // 複数パスのときは必ず新しいウィンドウで開く
+        await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(path),
+            { forceNewWindow: forceNewWindow || paths.length > 1 });
+    }
 }
 
-async function openWindowExecute(path: string, forceNewWindow: boolean) {
-    const uri = vscode.Uri.file(path);
-    let success = await vscode.commands.executeCommand("vscode.openFolder", uri, { "forceNewWindow": forceNewWindow });
-}
-
-export function openProjectsSettings(context: vscode.ExtensionContext, folder: boolean) {
+export async function openProjectsSettings(context: vscode.ExtensionContext, folder: boolean) {
     if (folder) {
-        openWindowExecute(context.globalStorageUri.fsPath, true);
+        await vscode.commands.executeCommand("vscode.openFolder", context.globalStorageUri, { forceNewWindow: true });
     } else {
-        vscode.window.showTextDocument(getProjectsJsonUri(context));
+        await vscode.window.showTextDocument(getProjectsJsonUri(context));
     }
 }
 
-export async function renameItem(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
-
-    const renameKey = await createName(treeView, treeItem);
-    if (renameKey === undefined) { return; }
-
-    let state = vscode.TreeItemCollapsibleState.Collapsed;
-    if (treeItem.collapsibleState !== undefined) {
-        state = treeItem.collapsibleState;
-    }
-    if (treeItem.parent !== undefined) {
-        delete treeItem.parent?.childrenJsonValue[treeItem.key];
-        treeItem.parent.childrenJsonValue[renameKey] = treeItem.childrenJsonValue;
-        treeView._onDidChangeTreeData.fire(new Array(treeItem.parent));
-    } else {
-        delete treeView.projects[treeItem.key];
-        treeView.projects[renameKey] = treeItem.childrenJsonValue;
-        treeView._onDidChangeTreeData.fire(undefined);
-    }
-
-    treeView.saveProjects();
-
+async function inputName(prompt: string): Promise<string | undefined> {
+    const name = await vscode.window.showInputBox({ prompt });
+    return name === undefined || name === "" ? undefined : name;
 }
 
-export async function deleteItem(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
-    if (treeItem.parent === undefined) {
-        delete treeView.projects[treeItem.key];
-        treeView._onDidChangeTreeData.fire(undefined);
-    } else {
-        delete treeItem.parent?.childrenJsonValue[treeItem.key];
-        treeView._onDidChangeTreeData.fire(new Array(treeItem.parent));
-    }
-    treeView.saveProjects();
+export async function renameItem(treeView: DeepJsonProvider, item: DeepJsonItem) {
+    const newKey = await inputName(`Rename "${item.key}"`);
+    if (newKey === undefined) { return; }
+    await treeView.renameItem(item, newKey);
 }
 
-export async function addList(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
-    const renameKey = await vscode.window.showInputBox();
-    if (renameKey === undefined) { return; }
-
-    if (typeof treeItem.childrenJsonValue === "object") {
-        treeItem.childrenJsonValue[renameKey] = [];
-        treeItem.initializeInfo();
-    }
-    treeView._onDidChangeTreeData.fire(new Array(treeItem));
-    treeView.saveProjects();
+export async function deleteItem(treeView: DeepJsonProvider, item: DeepJsonItem) {
+    const answer = await vscode.window.showWarningMessage(`Delete "${item.key}"?`, { modal: true }, "Delete");
+    if (answer !== "Delete") { return; }
+    await treeView.deleteItem(item);
 }
 
-export async function addDict(treeView: DeepJsonProvider, treeItem: DeepJsonItem) {
-    const renameKey = await vscode.window.showInputBox();
-    if (renameKey === undefined) { return; }
-
-    if (typeof treeItem.childrenJsonValue === "object") {
-        treeItem.childrenJsonValue[renameKey] = {};
-        treeItem.initializeInfo();
-    }
-    treeView._onDidChangeTreeData.fire(new Array(treeItem));
-    treeView.saveProjects();
+export async function addList(treeView: DeepJsonProvider, item: DeepJsonItem) {
+    const key = await inputName("New list name");
+    if (key === undefined) { return; }
+    await treeView.addChild(item, key, []);
 }
 
-async function createName(treeView: DeepJsonProvider, treeItem: DeepJsonItem): Promise<string | undefined> {
-    const renameKey = await vscode.window.showInputBox();
-    if (renameKey === undefined || renameKey === "") { return undefined; }
-
-    if (treeItem.parent === undefined) {
-        if (renameKey in treeView.projects) {
-            return undefined;
-        }
-    } else if (renameKey in treeItem.parent?.childrenJsonValue) {
-        return undefined;
-    }
-
-    return renameKey;
+export async function addDict(treeView: DeepJsonProvider, item: DeepJsonItem) {
+    const key = await inputName("New dict name");
+    if (key === undefined) { return; }
+    await treeView.addChild(item, key, {});
 }
 
-export async function addToPMDJ(treeView: DeepJsonProvider, uri: vscode.Uri) {
-    treeView.addProject(uri);
+export async function getPathFromItem(item: DeepJsonItem) {
+    const paths = pathsOf(item);
+    const text = paths.length > 0 ? paths.join("\n") : JSON.stringify(item.value, null, 2);
+    await vscode.env.clipboard.writeText(text);
 }
 
-
-export async function getPathFromItem(treeItem: DeepJsonItem) {
-    const obj = treeItem.childrenJsonValue;
-    if (typeof obj === "string") {
-        vscode.env.clipboard.writeText(obj);
-    } else if (typeof obj === "object") {
-        vscode.env.clipboard.writeText(JSON.stringify(obj));
-    } else if (Array.isArray(obj)) {
-        let str = "";
-        obj.forEach(line => {
-            str += line + "\n";
-        });
-        vscode.env.clipboard.writeText(JSON.stringify(str));
-    } else {
-        vscode.window.showInformationMessage("can not get path");
-        return;
-    }
-}
-
-export async function addProjectFromPath(treeView: DeepJsonProvider) {
-    const res = await vscode.window.showInputBox();
+export async function addProjectFromInput(treeView: DeepJsonProvider) {
+    const res = await inputName("Project path");
     if (res === undefined) { return; }
-
-    treeView.addProject(vscode.Uri.file(res));
-
+    await treeView.addProject(vscode.Uri.file(res));
 }
 
-export async function revealInFileExplorer(treeItem: DeepJsonItem) {
-    const obj = treeItem.childrenJsonValue;
-    if (typeof obj === "string") {
-        exec(`start "" "${obj}"`);
-    } else if (Array.isArray(obj)) {
-        obj.forEach(line => {
-            exec(`start "" "${line}"`);
-        });
-    } else {
-        vscode.window.showInformationMessage("can open in File Explorer");
+// OS 標準のファイルマネージャで開く。exec("start ...") は Windows 専用だったので VS Code の組み込みコマンドに置き換え
+export async function revealInFileExplorer(item: DeepJsonItem) {
+    const paths = pathsOf(item);
+    if (paths.length === 0) {
+        vscode.window.showInformationMessage("This item has no path.");
         return;
     }
+    for (const path of paths) {
+        await vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(path));
+    }
 }
-

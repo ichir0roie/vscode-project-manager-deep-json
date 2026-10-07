@@ -1,15 +1,22 @@
 import * as assert from 'assert';
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as vscode from 'vscode';
-// import * as myExtension from '../../extension';
+
+import { renameKey } from '../../lib/Util';
 
 suite('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
+	test('extension activates and registers commands', async () => {
+		const ext = vscode.extensions.getExtension('ichir0roie.project-manager-deep-json');
+		assert.ok(ext);
+		await ext.activate();
+		const commands = await vscode.commands.getCommands(true);
+		for (const id of ['deleteItem', 'renameItem', 'revealInFileExplorer', 'refresh']) {
+			assert.ok(commands.includes(`projectManagerDeepJson.${id}`), id);
+		}
+	});
 
-	test('Sample test', () => {
-		assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
+	test('renameKey keeps key order', () => {
+		const obj: Record<string, any> = { a: 1, b: 2, c: 3 };
+		renameKey(obj, 'b', 'x');
+		assert.deepStrictEqual(Object.entries(obj), [['a', 1], ['x', 2], ['c', 3]]);
 	});
 });

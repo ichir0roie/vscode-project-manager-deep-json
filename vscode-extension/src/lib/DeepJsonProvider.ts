@@ -1,291 +1,243 @@
-import { isAnyArrayBuffer } from 'util/types';
 import * as vscode from 'vscode';
 
-import { openWindowNew, openWindowThis } from './Action';
 import SettingsProvider from './SettingsProvider';
+import { isPlainObject, PROJECTS_FILE_NAME, renameKey } from './Util';
 
+// 文字列: パス、配列: 複数パス、オブジェクト: フォルダ
+export type ProjectValue = string | string[] | Record<string, any>;
 
+type Mutator = (projects: Record<string, any>) => boolean | void;
 
 // https://github.com/microsoft/vscode-extension-samples/blob/main/tree-view-sample/src/testViewDragAndDrop.ts
+export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, vscode.TreeDragAndDropController<DeepJsonItem>, vscode.Disposable {
+  private readonly settingsProvider: SettingsProvider;
+  private projects: Record<string, any> | undefined;
+  private expandStates: Record<string, vscode.TreeItemCollapsibleState> = {};
+  private readonly disposables: vscode.Disposable[] = [];
 
-export class DeepJsonProvider implements vscode.TreeDataProvider<DeepJsonItem>, vscode.TreeDragAndDropController<DeepJsonItem> {
-  context: vscode.ExtensionContext;
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<DeepJsonItem | undefined>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
-  settingsProvider: SettingsProvider;
-  projects: any;
-  expandStates: any;
+  readonly dropMimeTypes = ['application/vnd.code.tree.projectManagerDeepJson'];
+  readonly dragMimeTypes = ['text/uri-list'];
 
   constructor(context: vscode.ExtensionContext) {
-    this.context = context;
     this.settingsProvider = new SettingsProvider(context);
+
     const tv = vscode.window.createTreeView('projectManagerDeepJson', {
       treeDataProvider: this,
-      dragAndDropController: this
+      dragAndDropController: this,
     });
-    tv.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<DeepJsonItem>) => {
-      this.onDidChangeSelection(e.selection);
-      // tv.reveal(e.selection[0], { focus: false, select: false });
-    });
-    tv.onDidCollapseElement((e: vscode.TreeViewExpansionEvent<DeepJsonItem>) => {
-      this.onDidCollapseElement(e.element);
-    });
-    tv.onDidExpandElement((e: vscode.TreeViewExpansionEvent<DeepJsonItem>) => {
-      this.onDidExpandElement(e.element);
-    });
+    this.disposables.push(
+      tv,
+      tv.onDidCollapseElement(e => this.settingsProvider.addExpandStates(e.element.currentPath, vscode.TreeItemCollapsibleState.Collapsed)),
+      tv.onDidExpandElement(e => this.settingsProvider.addExpandStates(e.element.currentPath, vscode.TreeItemCollapsibleState.Expanded)),
+    );
 
-    context.subscriptions.push(tv);
-  }
-  public _onDidChangeTreeData: vscode.EventEmitter<(DeepJsonItem | undefined)[] | undefined> = new vscode.EventEmitter<DeepJsonItem[] | undefined>();
-  // We want to use an array as the event type, but the API for this is currently being finalized. Until it's finalized, use any.
-  public onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
-
-  // TODO support ssh command
-  onDidChangeSelection(elem: readonly DeepJsonItem[]) {
-    if (elem.length <= 0) { return; }
-    const targetItem: DeepJsonItem = elem[0];
-    if (typeof targetItem.childrenJsonValue === "string" || Array.isArray(targetItem.childrenJsonValue)) {
-      openWindowNew(elem[0]);
-    }
+    // 別ウィンドウ(別プロセス)が保存した内容を取り込む。
+    // globalStorage はワークスペース外なので RelativePattern で明示的に監視する。
+    const watcher = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(context.globalStorageUri, PROJECTS_FILE_NAME));
+    this.disposables.push(
+      watcher,
+      watcher.onDidChange(() => this.refresh()),
+      watcher.onDidCreate(() => this.refresh()),
+      watcher.onDidDelete(() => this.refresh()),
+      vscode.window.onDidChangeWindowState(e => {
+        if (e.focused) { this.refresh(); }
+      }),
+    );
   }
 
-  onDidCollapseElement(elem: DeepJsonItem) {
-    this.settingsProvider.addExpandStates(elem.currentPath, vscode.TreeItemCollapsibleState.Collapsed);
+  dispose() {
+    vscode.Disposable.from(...this.disposables).dispose();
+    this._onDidChangeTreeData.dispose();
   }
-  onDidExpandElement(elem: DeepJsonItem) {
-    this.settingsProvider.addExpandStates(elem.currentPath, vscode.TreeItemCollapsibleState.Expanded);
+
+  // ディスクから読み直してツリー全体を再描画する
+  refresh() {
+    this.projects = undefined;
+    this._onDidChangeTreeData.fire(undefined);
   }
+
   getTreeItem(element: DeepJsonItem): DeepJsonItem {
     return element;
   }
 
-  getParent(element: DeepJsonItem): vscode.ProviderResult<DeepJsonItem> {
-
-    return element;
+  getParent(element: DeepJsonItem): DeepJsonItem | undefined {
+    return element.parent;
   }
 
-
-
-  // call initialize and expand
-  getChildren(element?: DeepJsonItem): Thenable<DeepJsonItem[]> {
-
-    if (element) {
-      // this is child position!!
-      return Promise.resolve(this.getItems(element));
-    } else {
-      // this is root position!!
-      return Promise.resolve(this.getItems(undefined));
-    }
-  }
-
-  private async getItems(parentItem: DeepJsonItem | undefined): Promise<DeepJsonItem[]> {
-
-    let childDict: any;
-
-    if (parentItem === undefined) {
-      // if (this.rootItems.length > 0) {
-      //   return this.rootItems;
-      // }
-
-      // get root item!!
+  async getChildren(element?: DeepJsonItem): Promise<DeepJsonItem[]> {
+    let childDict: unknown;
+    if (element === undefined) {
       if (this.projects === undefined) {
-        await this.initializeSettings();
+        try {
+          this.projects = await this.settingsProvider.readProjects();
+          this.expandStates = await this.settingsProvider.readExpandStates();
+        } catch (e) {
+          vscode.window.showErrorMessage(`Project Manager Deep Json: ${String(e)}`);
+          return [];
+        }
       }
       childDict = this.projects;
     } else {
-      childDict = parentItem.childrenJsonValue;
+      childDict = element.value;
     }
-    let itemArray = new Array<DeepJsonItem>();
-
-    for (const key in childDict) {
-      const value = childDict[key];
-
-      let state = vscode.TreeItemCollapsibleState.Collapsed;
-      const parentPath = (parentItem === undefined) ? undefined : parentItem.currentPath;
-      const currentPath = this.getCurrentPath(parentPath, key);
-      if (typeof value === "string" || Array.isArray(value)) {
-        state = vscode.TreeItemCollapsibleState.None;
-      } else {
-        if (this.expandStates[currentPath]) {
-          const stateStr = this.expandStates[currentPath];
-          state = stateStr ? stateStr : vscode.TreeItemCollapsibleState.None;
-        }
-      }
-      itemArray.push(new DeepJsonItem(currentPath, state, key, value, parentItem));
+    if (!isPlainObject(childDict)) {
+      return [];
     }
 
-    return itemArray;
-  }
-
-  private async initializeSettings() {
-    this.projects = await this.settingsProvider.readProjects();
-    this.expandStates = await this.settingsProvider.readExpandStates();
-  }
-
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
-  dropMimeTypes = ['application/tree.deepJsonProvider'];
-  dragMimeTypes = ['text/uri-list'];
-
-
-  handleDrag(source: readonly DeepJsonItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
-    // dataTransfer.set("application/test.pmdj", new vscode.DataTransferItem(source));
-    dataTransfer.set("application/tree.deepJsonProvider", new vscode.DataTransferItem(source));
-
-  }
-  handleDrop(target: DeepJsonItem | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void | Thenable<void> {
-    const transferItem = dataTransfer.get("application/tree.deepJsonProvider");
-    if (!transferItem) { return; }
-    const moved = this.editElem(target, transferItem.value);
-    if (moved) {
-      this.saveProjects();
-    }
-  }
-
-  editElem(target: DeepJsonItem | undefined, source: DeepJsonItem[]): boolean {
-    let rootRemove: boolean = false;
-    let fireTarget = new Array<DeepJsonItem | undefined>();
-    source.forEach(dragItem => {
-      // ignore
-      if (target === undefined && dragItem.parent === undefined) {
-        return;
-      } else if (dragItem.parent?.currentPath === target?.currentPath) {
-        return;
-      }
-
-      // process
-      if (target === undefined) {
-        this.projects[dragItem.key] = dragItem.childrenJsonValue;
-      } else if (Array.isArray(target.childrenJsonValue) && typeof dragItem.childrenJsonValue === "string") {
-        target.childrenJsonValue.push(dragItem.childrenJsonValue);
-      } else if (typeof target.childrenJsonValue === "object") {
-        target.childrenJsonValue[dragItem.key] = dragItem.childrenJsonValue;
-      } else {
-        // finally
-        return;
-      }
-
-      // delete dragItem
-      if (dragItem.parent !== undefined) {
-        fireTarget.push(dragItem.parent);
-        delete dragItem.parent?.childrenJsonValue[dragItem.key];
-      } else {// root item
-        if (this.projects[dragItem.key]) {
-          delete this.projects[dragItem.key];
-          rootRemove = true;
-        }
-      }
+    return Object.entries(childDict).map(([key, value]) => {
+      const currentPath = element === undefined ? key : `${element.currentPath}.${key}`;
+      const state = isPlainObject(value)
+        ? (this.expandStates[currentPath] ?? vscode.TreeItemCollapsibleState.Collapsed)
+        : vscode.TreeItemCollapsibleState.None;
+      return new DeepJsonItem(currentPath, state, key, value, element);
     });
-    if (rootRemove) {
-      fireTarget.push(undefined);
-    }
-    if (fireTarget.length <= 0) {
+  }
+
+  // 他ウィンドウの変更を上書きしないよう、変更のたびにディスクの最新を読み直してから書く
+  async mutate(fn: Mutator): Promise<boolean> {
+    let projects: Record<string, any>;
+    try {
+      projects = await this.settingsProvider.readProjects();
+    } catch (e) {
+      vscode.window.showErrorMessage(`Project Manager Deep Json: ${String(e)}`);
       return false;
     }
-
-    fireTarget.push(target);
-
-    this._onDidChangeTreeData.fire(fireTarget);
-
+    if (fn(projects) === false) {
+      return false;
+    }
+    await this.settingsProvider.saveProjects(projects);
+    this.refresh();
     return true;
   }
 
-  private getCurrentPath(parentKey: string | undefined, currentKey: string) {
-    if (parentKey === undefined) {
-      return currentKey;
-    } else {
-      return parentKey + "." + currentKey;
-    }
-  }
-
-  public async addProject(uri: vscode.Uri | undefined = undefined) {
+  async addProject(uri?: vscode.Uri) {
     await this.settingsProvider.addProject(uri);
-    this.projects = undefined;
-    this.refreshTreeItem(undefined);
+    this.refresh();
   }
 
-  public saveProjects() {
-    this.settingsProvider.saveProjects(this.projects);
-  }
-  private refreshTreeItem(treeItem: DeepJsonItem | undefined) {
-    this.getChildren(treeItem);
-    this._onDidChangeTreeData.fire(new Array(treeItem));
-  }
-
-  public deleteItem(treeItem: DeepJsonItem) {
-    let parent = treeItem.parent;
-    if (parent === undefined) {
-      delete this.projects[treeItem.key];
-    } else {
-      delete parent?.childrenJsonValue[treeItem.key];
-    }
-    this.refreshTreeItem(treeItem);
+  renameItem(item: DeepJsonItem, newKey: string) {
+    return this.mutate(projects => {
+      const parent = resolveParent(projects, item);
+      if (parent === undefined || !(item.key in parent)) { return false; }
+      if (newKey in parent) {
+        vscode.window.showWarningMessage(`"${newKey}" already exists.`);
+        return false;
+      }
+      renameKey(parent, item.key, newKey);
+    });
   }
 
+  deleteItem(item: DeepJsonItem) {
+    return this.mutate(projects => {
+      const parent = resolveParent(projects, item);
+      if (parent === undefined || !(item.key in parent)) { return false; }
+      delete parent[item.key];
+    });
+  }
 
+  addChild(item: DeepJsonItem, key: string, value: ProjectValue) {
+    return this.mutate(projects => {
+      const target = resolve(projects, item.pathKeys);
+      if (!isPlainObject(target)) { return false; }
+      if (key in target) {
+        vscode.window.showWarningMessage(`"${key}" already exists.`);
+        return false;
+      }
+      target[key] = value;
+    });
+  }
 
+  handleDrag(source: readonly DeepJsonItem[], dataTransfer: vscode.DataTransfer): void {
+    dataTransfer.set(this.dropMimeTypes[0], new vscode.DataTransferItem(source.map(s => s.pathKeys)));
+  }
 
+  async handleDrop(target: DeepJsonItem | undefined, dataTransfer: vscode.DataTransfer): Promise<void> {
+    const transferItem = dataTransfer.get(this.dropMimeTypes[0]);
+    if (!transferItem) { return; }
+    const sources = transferItem.value as string[][];
+    const targetKeys = target?.pathKeys ?? [];
+
+    await this.mutate(projects => {
+      let moved = false;
+      for (const sourceKeys of sources) {
+        const sourceParentKeys = sourceKeys.slice(0, -1);
+        const key = sourceKeys[sourceKeys.length - 1];
+        // 同じ親の中、または自分自身・自分の子孫へのドロップは無視
+        if (sameKeys(sourceParentKeys, targetKeys) || isPrefix(sourceKeys, targetKeys)) { continue; }
+
+        const sourceParent = resolve(projects, sourceParentKeys);
+        const targetValue = resolve(projects, targetKeys);
+        if (!isPlainObject(sourceParent) || !(key in sourceParent)) { continue; }
+        const value = sourceParent[key];
+
+        if (Array.isArray(targetValue) && typeof value === "string") {
+          targetValue.push(value);
+        } else if (isPlainObject(targetValue)) {
+          if (key in targetValue) { continue; }
+          targetValue[key] = value;
+        } else {
+          continue;
+        }
+        delete sourceParent[key];
+        moved = true;
+      }
+      return moved;
+    });
+  }
 }
 
+function resolve(projects: Record<string, any>, keys: string[]): unknown {
+  let cur: unknown = projects;
+  for (const key of keys) {
+    if (!isPlainObject(cur)) { return undefined; }
+    cur = cur[key];
+  }
+  return cur;
+}
 
+function resolveParent(projects: Record<string, any>, item: DeepJsonItem): Record<string, any> | undefined {
+  const parent = resolve(projects, item.pathKeys.slice(0, -1));
+  return isPlainObject(parent) ? parent : undefined;
+}
 
+function sameKeys(a: string[], b: string[]) {
+  return a.length === b.length && a.every((k, i) => k === b[i]);
+}
+
+function isPrefix(prefix: string[], keys: string[]) {
+  return prefix.length <= keys.length && prefix.every((k, i) => k === keys[i]);
+}
 
 export class DeepJsonItem extends vscode.TreeItem {
-  childrenJsonValue: any = undefined;
-  currentPath: string;
-  state = vscode.TreeItemCollapsibleState.None;
-  rootOpenPath: string | undefined;
-  parent: DeepJsonItem | undefined;
-  key: string;
-  label: any;
+  readonly pathKeys: string[];
+
   constructor(
-    currentPath: string,
+    readonly currentPath: string,
     state: vscode.TreeItemCollapsibleState,
-    key: string,
-    childrenJsonValue: any,
-    parent: DeepJsonItem | undefined
+    readonly key: string,
+    readonly value: ProjectValue,
+    readonly parent: DeepJsonItem | undefined,
   ) {
     super(key, state);
-    this.state = state;
-    this.currentPath = currentPath;
-    this.parent = parent;
-    this.childrenJsonValue = childrenJsonValue;
-    this.key = key;
+    this.pathKeys = parent === undefined ? [key] : [...parent.pathKeys, key];
 
-    // this.tooltip="tooltip";
-    // this.description="description";
-    this.initializeInfo();
-  }
-
-  initializeInfo() {
-
-    if (typeof this.childrenJsonValue === "string") {
-      this.setInfo(this.childrenJsonValue, this.childrenJsonValue, this.childrenJsonValue);
-    } else if (Array.isArray(this.childrenJsonValue)) {
-      let desc = "";
-      this.childrenJsonValue.forEach((line: string) => {
-        desc += line.split("\\").join("/") + "\n";
-      });
-      this.setInfo(this.childrenJsonValue, " : " + this.childrenJsonValue.length + " files", desc);
-    } else if (typeof this.childrenJsonValue === "object") {
-      // folder have root
-
-      // folder
-      let desc = "";
-      for (this.key in this.childrenJsonValue) {
-        const value = this.childrenJsonValue[this.key];
-        desc += this.key + '\n';
-      }
-      // this.setInfo(value," > "+map.size,desc);
-      this.setInfo(this.childrenJsonValue, undefined, desc);
-    } else {
-      // ???
-      this.setInfo(undefined, undefined, undefined);
+    if (typeof value === "string") {
+      this.description = value;
+      this.tooltip = value;
+      this.contextValue = "path";
+      this.command = { command: "projectManagerDeepJson.openWindowNew", title: "Open", arguments: [this] };
+    } else if (Array.isArray(value)) {
+      this.description = ` : ${value.length} files`;
+      this.tooltip = value.map(line => line.split("\\").join("/")).join("\n");
+      this.contextValue = "path";
+      this.command = { command: "projectManagerDeepJson.openWindowNew", title: "Open", arguments: [this] };
+    } else if (isPlainObject(value)) {
+      this.tooltip = Object.keys(value).join("\n");
+      this.contextValue = "folder";
     }
-
-  }
-
-  setInfo(value: any, description: string | undefined, tooltip: string | undefined) {
-    this.childrenJsonValue = value;
-    this.description = description;
-    this.tooltip = tooltip;
   }
 }

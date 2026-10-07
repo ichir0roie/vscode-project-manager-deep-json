@@ -1,150 +1,42 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// import { projectManagerDeepJsonProvider } from './lib/projectManagerDeepJsonProvider';
-
-
-import { addDict, addList, addProjectFromPath as addProjectFromInput, addToPMDJ, deleteItem, getPathFromItem, openProjectsSettings, openWindowNew, openWindowThis, renameItem, revealInFileExplorer } from './lib/Action';
-
+import {
+	addDict, addList, addProjectFromInput, deleteItem, getPathFromItem,
+	openProjectsSettings, openWindow, renameItem, revealInFileExplorer,
+} from './lib/Action';
 import { DeepJsonItem, DeepJsonProvider } from './lib/DeepJsonProvider';
-import SettingsProvider from './lib/SettingsProvider';
 import { getProjectsJsonUri } from './lib/Util';
 
-import { getWebviewContent } from "./lib/webView/ui/sample";
+export function activate(context: vscode.ExtensionContext) {
+	const treeView = new DeepJsonProvider(context);
+	context.subscriptions.push(treeView);
 
-let treeView: DeepJsonProvider;
+	const commands: Record<string, (...args: any[]) => unknown> = {
+		"projectManagerDeepJson.openWindowThis": (item: DeepJsonItem) => openWindow(item, false),
+		"projectManagerDeepJson.openWindowNew": (item: DeepJsonItem) => openWindow(item, true),
+		"projectManagerDeepJson.openJson": () => openProjectsSettings(context, false),
+		"projectManagerDeepJson.openJsonFolder": () => openProjectsSettings(context, true),
+		"projectManagerDeepJson.addProject": () => treeView.addProject(),
+		"projectManagerDeepJson.addProjectFromInput": () => addProjectFromInput(treeView),
+		"projectManagerDeepJson.addTo": (uri: vscode.Uri) => treeView.addProject(uri),
+		"projectManagerDeepJson.renameItem": (item: DeepJsonItem) => renameItem(treeView, item),
+		"projectManagerDeepJson.deleteItem": (item: DeepJsonItem) => deleteItem(treeView, item),
+		"projectManagerDeepJson.createList": (item: DeepJsonItem) => addList(treeView, item),
+		"projectManagerDeepJson.createDict": (item: DeepJsonItem) => addDict(treeView, item),
+		"projectManagerDeepJson.getPath": (item: DeepJsonItem) => getPathFromItem(item),
+		"projectManagerDeepJson.revealInFileExplorer": (item: DeepJsonItem) => revealInFileExplorer(item),
+		"projectManagerDeepJson.refresh": () => treeView.refresh(),
+	};
+	for (const [id, handler] of Object.entries(commands)) {
+		context.subscriptions.push(vscode.commands.registerCommand(id, handler));
+	}
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export async function activate(context: vscode.ExtensionContext) {
-	treeView = new DeepJsonProvider(context);
-
-	let disposable: vscode.Disposable;
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindowThis", (args) => {
-		openWindowThis(args);
-	});
-	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openWindowNew", (args) => {
-		openWindowNew(args);
-	});
-	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openJson", (args) => {
-		openProjectsSettings(context, false);
-	});
-	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.openJsonFolder", (args) => {
-		openProjectsSettings(context, true);
-	});
-	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.addProject", () => {
-		treeView.addProject();
-	});
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.renameItem",
-		(treeItem: DeepJsonItem) => {
-			renameItem(treeView, treeItem);
+	// このウィンドウで projects.jsonc を直接編集・保存したときも即反映する
+	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(doc => {
+		if (doc.uri.fsPath === getProjectsJsonUri(context).fsPath) {
+			treeView.refresh();
 		}
-	);
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.createList",
-		(treeItem: DeepJsonItem) => {
-			addList(treeView, treeItem);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.createDict",
-		(treeItem: DeepJsonItem) => {
-			addDict(treeView, treeItem);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.deleteItem",
-		(treeItem: DeepJsonItem) => {
-			deleteItem(treeView, treeItem);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.refresh",
-		() => {
-			treeView = new DeepJsonProvider(context);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.addTo",
-		(uri: vscode.Uri) => {
-			addToPMDJ(treeView, uri);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.getPath",
-		(treeItem: DeepJsonItem) => {
-			getPathFromItem(treeItem);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.addProjectFromInput",
-		() => {
-			addProjectFromInput(treeView);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand("projectManagerDeepJson.revealInFileExplorer",
-		(treeItem: DeepJsonItem) => {
-			revealInFileExplorer(treeItem);
-		}
-	);
-	context.subscriptions.push(disposable);
-
-	// https://code.visualstudio.com/api/extension-guides/webview
-	context.subscriptions.push(
-		vscode.commands.registerCommand('catCoding.start', () => {
-			// Create and show a new webview
-			const panel = vscode.window.createWebviewPanel(
-				'catCoding', // Identifies the type of the webview. Used internally
-				'Cat Coding', // Title of the panel displayed to the user
-				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-				{} // Webview options. More on these later.
-			);
-
-
-			let iteration = 0;
-			const updateWebview = () => {
-				const cat = iteration++ % 2 ? 'Compiling Cat' : 'Coding Cat';
-				panel.title = cat;
-				panel.webview.html = getWebviewContent(cat);
-			};
-
-			// Set initial content
-			updateWebview();
-
-			// And schedule updates to the content every second
-			setInterval(updateWebview, 1000);
-		})
-	);
-	context.subscriptions.push(disposable);
-
-
-
-	vscode.workspace.onDidSaveTextDocument((e) => {
-		if (e.uri.fsPath === getProjectsJsonUri(context).fsPath) {
-			treeView = new DeepJsonProvider(context);
-		}
-	});
-
-
+	}));
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {
-}
+export function deactivate() { }

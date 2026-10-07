@@ -1,149 +1,84 @@
-
 import * as vscode from 'vscode';
-import { jsonc } from "jsonc";
-import * as util from './Util';
-import stripJsonTrailingCommas from "strip-json-trailing-commas";
+import { parse, ParseError } from "jsonc-parser";
 import { TextDecoder, TextEncoder } from 'util';
-import { DeepJsonItem } from './DeepJsonProvider';
+import * as util from './Util';
 
-class JsonProvider {
-
-    // base method
-    private async readFile(uri: vscode.Uri): Promise<string> {
-        const value = await vscode.workspace.fs.readFile(uri);
-        const dec = new TextDecoder();
-        return dec.decode(value);
-    }
+class JsonStore {
+    constructor(private readonly dirUri: vscode.Uri) { }
 
     protected async readJsonc(uri: vscode.Uri): Promise<any> {
-        let stat;
         try {
-            stat = await vscode.workspace.fs.stat(uri);
-        } catch (e) {
-            await this.writeFile(uri, '{}');
+            await vscode.workspace.fs.stat(uri);
+        } catch {
+            await this.writeJsonc(uri, {});
         }
-        let jsonString = await this.readFile(uri);
-        try {
-
-            jsonString = jsonc.stripComments(jsonString);
-
-            jsonString = stripJsonTrailingCommas(jsonString, { stripWhitespace: true });
-
-            // ],に対応してない対策
-            jsonString = util.replaceZettai(jsonString, "\n ", "\n");
-            jsonString = util.replace(jsonString, "\n", "");
-            jsonString = util.replace(jsonString, "],", "]");
-            jsonString = util.replace(jsonString, "][", "],[");
-            jsonString = util.replace(jsonString, "]\"", "],\"");
-            // jsonString=jsonc.uglify(jsonString);
-
-            // const obj: object =jsonc.parse(jsonString);
-            // return obj;
-            return JSON.parse(jsonString);
-        } catch (error) {
-            console.log(error);
-            console.log(jsonString);
-            throw error;
+        const text = new TextDecoder().decode(await vscode.workspace.fs.readFile(uri));
+        if (text.trim() === "") {
+            return {};
         }
+        const errors: ParseError[] = [];
+        const value = parse(text, errors, { allowTrailingComma: true });
+        // 保存途中のファイルなど、中身が壊れているときは例外にして呼び出し側で扱う
+        if (errors.length > 0 && !util.isPlainObject(value)) {
+            throw new Error(`failed to parse ${uri.fsPath}`);
+        }
+        return value;
     }
 
-
-    private async writeFile(uri: vscode.Uri, text: string) {
-        const enc = new TextEncoder();
-        const uint8Array = enc.encode(text);
-        await vscode.workspace.fs.writeFile(uri, uint8Array);
-    }
     protected async writeJsonc(uri: vscode.Uri, json: any) {
-        await this.writeFile(uri, JSON.stringify(json, null, 2));
+        await vscode.workspace.fs.createDirectory(this.dirUri);
+        await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(JSON.stringify(json, null, 2)));
     }
-
-
 }
 
-export default class SettingsProvider extends JsonProvider {
-    protected context: vscode.ExtensionContext;
-    private projectDictUri: vscode.Uri;
-    private expandStatesUri: vscode.Uri;
-
+export default class SettingsProvider extends JsonStore {
+    private readonly projectDictUri: vscode.Uri;
+    private readonly expandStatesUri: vscode.Uri;
+    private expandStatesQueue: Promise<void> = Promise.resolve();
 
     constructor(context: vscode.ExtensionContext) {
-        super();
-        this.context = context;
+        super(context.globalStorageUri);
         this.projectDictUri = util.getProjectsJsonUri(context);
         this.expandStatesUri = util.getExpandStateJsonUri(context);
-
     }
 
-
-    async readProjects(): Promise<any> {
-        return await this.readJsonc(this.projectDictUri);
+    readProjects(): Promise<any> {
+        return this.readJsonc(this.projectDictUri);
     }
 
-    async saveProjects(projects: any) {
-        await this.writeJsonc(this.projectDictUri, projects);
+    saveProjects(projects: any): Promise<void> {
+        return this.writeJsonc(this.projectDictUri, projects);
     }
+
     async addProject(uri: vscode.Uri | undefined = undefined) {
-        let filePath: string | undefined = undefined;
-        if (uri === undefined) {
-            filePath = util.getRootPath();
-
-        } else {
-            filePath = uri.fsPath;
-        }
+        let filePath = uri === undefined ? util.getRootPath() : uri.fsPath;
         if (filePath === undefined) {
             return;
         }
-        filePath = util.replaceZettai(filePath, "\\", "/");
-        let projects = await this.readProjects();
-
-        let splitValues = filePath.split("/");
-        let key = splitValues[splitValues.length - 1];
-
-        if (Object.keys(projects).length <= 0) {
-            vscode.window.showInformationMessage("setting file size is 0.");
+        if (process.platform === "win32") {
+            filePath = filePath.split("\\").join("/");
         }
-        //TODO projects[""] = filePath;
+        const projects = await this.readProjects();
+        const key = filePath.split("/").pop() || filePath;
         projects[key] = filePath;
         await this.saveProjects(projects);
     }
 
-
-    async saveExpandStates(expandStates: any) {
-        await this.writeJsonc(this.expandStatesUri, expandStates);
+    readExpandStates(): Promise<any> {
+        return this.readJsonc(this.expandStatesUri);
     }
 
-    async readExpandStates(): Promise<any> {
-
-        try {
-            await vscode.workspace.fs.stat(this.expandStatesUri);
-        } catch (e) {
-            await this.writeJsonc(this.expandStatesUri, {});
-        }
-
-        return await this.readJsonc(this.expandStatesUri);
-    }
-
-    async addExpandStates(key: string, state: vscode.TreeItemCollapsibleState) {
-        let expandStates = await this.readExpandStates();
-        expandStates[key] = state;
-        this.saveExpandStates(expandStates);
-    }
-
-    async initializeExpandStates(treeItemArray: Array<DeepJsonItem>) {
-        // let expandStates = await this.readExpandStates();
-        let expandStates: any = {};
-        treeItemArray.forEach((item) => {
-            expandStates[item.currentPath] = item.collapsibleState;
+    // 複数の開閉イベントが続いても読み書きが競合しないよう直列化する
+    addExpandStates(key: string, state: vscode.TreeItemCollapsibleState): Promise<void> {
+        this.expandStatesQueue = this.expandStatesQueue.then(async () => {
+            try {
+                const expandStates = await this.readExpandStates();
+                expandStates[key] = state;
+                await this.writeJsonc(this.expandStatesUri, expandStates);
+            } catch (e) {
+                console.error(e);
+            }
         });
-        this.saveExpandStates(expandStates);
+        return this.expandStatesQueue;
     }
-
-
-    // backupProject(projectsJson: any) {
-    //     let ws = vscode.workspace;
-    //     let config = ws.getConfiguration();
-    //     config.update('projectManagerDeepJson.projects.backup', projectsJson, true, undefined);
-    // }
-
-
 }

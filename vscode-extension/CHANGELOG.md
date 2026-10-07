@@ -1,5 +1,14 @@
 # Change Log
 
+## 2026/10/07 (5.0.0)
+
+* 複数ウィンドウ間の同期: 他ウィンドウで編集した内容を FileSystemWatcher とフォーカス復帰時に再読込。変更時は常にディスクの最新を読んでから保存するので上書き消失もしない
+* Linux/macOS で Reveal in File Explorer が動かない問題を修正 (`start` コマンド依存を `revealFileInOS` に置換)
+* Delete が別のキーを消す/効かない問題を修正 (フォルダ項目の key が子のキーで上書きされていた)
+* Delete 前に確認ダイアログを表示
+* Rename/Create Dict/Create List/Delete をツリー項目のパスで解決するように全面リファクタリング
+* jsonc-parser 導入、TypeScript 5 / ESLint 9 / VS Code 1.90 API へ更新、catCoding サンプルを削除
+
 ## 2023/01/16
 
 * Reveal in File Explorer action added to inline icon
