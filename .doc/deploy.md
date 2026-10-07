@@ -5,7 +5,7 @@
 main に push されると [.github/workflows/publish.yml](../.github/workflows/publish.yml) が走る。
 
 1. lint とテストを実行
-2. `package.json` の `version` に対応するタグ `v<version>` が無ければ Marketplace に publish してタグを打つ
+2. `package.json` の `version` に対応するタグ `v<version>` が無く、Marketplace にもその version が無ければ publish してタグを打つ(手動 publish 済みならタグだけ打つ)
 3. タグがあれば何もしない
 
 つまりリリース手順は「`package.json` の version を上げて CHANGELOG を書いて main にマージ」だけ。
