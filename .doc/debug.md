@@ -6,3 +6,7 @@ https://code.visualstudio.com/api/get-started/your-first-extension
 VS Code のターミナルは `ELECTRON_RUN_AS_NODE` を設定するため、テスト用に落とした `code` が引数を拒否する(`bad option`)。
 
     env -u ELECTRON_RUN_AS_NODE npm test
+
+## リポジトリ構成
+
+2026/10/07 に wpf / reactNative の実験を削除し、拡張をリポジトリ直下に戻した。ルートを開けば F5 で動く。
