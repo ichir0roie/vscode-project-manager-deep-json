@@ -12,4 +12,4 @@ for elem in input_json:
     output_temp[elem["name"]] = elem["rootPath"]
 
 with open("output.json", "w") as f:
-    json.dump({"temp": output_temp}, f)
+    json.dump({"temp": output_temp}, f, indent=2, ensure_ascii=False)

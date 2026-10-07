@@ -1,94 +1,74 @@
 # Change Log
 
-## 2026/10/07 (5.0.0)
+## 5.0.0 (2026-10-07)
 
-* 複数ウィンドウ間の同期: 他ウィンドウで編集した内容を FileSystemWatcher とフォーカス復帰時に再読込。変更時は常にディスクの最新を読んでから保存するので上書き消失もしない
-* Linux/macOS で Reveal in File Explorer が動かない問題を修正 (`start` コマンド依存を `revealFileInOS` に置換)
-* Delete が別のキーを消す/効かない問題を修正 (フォルダ項目の key が子のキーで上書きされていた)
-* Delete 前に確認ダイアログを表示
-* Rename/Create Dict/Create List/Delete をツリー項目のパスで解決するように全面リファクタリング
-* jsonc-parser 導入、TypeScript 5 / ESLint 9 / VS Code 1.90 API へ更新、catCoding サンプルを削除
+### Added
 
-## 2023/01/16
+- Sync across windows. Edits made in one VS Code window are picked up by other windows through a file watcher and on window focus. Every write re-reads the file first, so one window no longer overwrites another's changes.
+- Confirmation dialog before Delete.
+- Marketplace icon and metadata, rewritten README.
 
-* Reveal in File Explorer action added to inline icon
+### Fixed
 
-## 2022/10/10
+- "Reveal in File Explorer" did nothing on Linux and macOS. It used the Windows-only `start` command and now uses VS Code's built-in `revealFileInOS`.
+- Delete sometimes removed the wrong item or nothing at all, because a group item's key was overwritten by a child's key.
 
-* 同じフォルダに入れると消えるバグ対策
-* パス取得機能強化
+### Changed
 
-## 2022/10/08
+- Rename, Delete, Create Dict and Create List now resolve the target by its path in the tree instead of by object identity.
+- Updated to TypeScript 5, ESLint 9 and the VS Code 1.90 API. Removed the leftover `catCoding` sample.
 
-* implement menu
-* add function to explorer menu
+## 2023-01-16
 
-## 2022/10/02
+- Added "Reveal in File Explorer" as an inline icon.
 
-drag and drop!
+## 2022-10-10
 
-## 2022/09/12
+- Fixed items disappearing when dropped into the folder they were already in.
+- "Get path from item" copies all paths of a multi-path item.
 
-* 空白付きのパスが開けない問題
+## 2022-10-08
 
-## 2022/08/30
+- Added the right-click menu on tree items.
+- Added "Add To PMDJ" to the Explorer context menu.
 
-* パス追加時のバックスラッシュをスラッシュに変換
-* workspaceを開いているときの保存機能追加
+## 2022-10-02
 
-## 2022/08/25
+- Drag and drop between groups.
 
-* use jsonc-parser
-  * コメントアウトなどの対応
-* trailing comma 完全対応？
+## 2022-09-12
 
-## 2022/08/24
+- Fixed paths containing spaces not opening.
 
-* フォルダが開けないバグ
+## 2022-08-30
 
-## 2022/08/19
+- Backslashes are converted to forward slashes when a path is added.
+- The current `.code-workspace` file can be registered, not only folders.
 
-* タグ同名の設定でタグと統合
-* リスト設定で同時に開く
-* 設定ファイル読み込み時に自動整形
-  * コンマ削除や追加
-* 同じwindowで開く
-* jsonc 対応
+## 2022-08-25
 
-* //BUG たまにフォルダがexpandedになる。
+- Switched to `jsonc-parser`. Comments and trailing commas are allowed in the configuration file.
 
-## 2022/08/17
+## 2022-08-24
 
-* New Window系
-  * inlineボタンでこのWindowで開く
+- Fixed folders failing to open.
 
+## 2022-08-19
 
-## 2022/08/15
+- Multi-path items open every path at once.
+- The configuration file is reformatted on load.
+- "Open Project In This Window".
 
-* 開いた状態保存機能の改善
-  * 存在しないパスの削除
-  * データ読み込み回数の削減
-* inlineボタンではなく、行クリックで開く
+## 2022-08-17
 
-* 不要なsvgによる起動速度検証
-  * とりあえずいらんやつ消した。
+- Inline button to open in the current window.
 
+## 2022-08-15
 
-## 2022/08/15
+- Remember which groups are expanded. Entries for paths that no longer exist are dropped.
+- Clicking a row opens it instead of an inline button.
+- Removed unused SVG files to speed up activation.
 
-* inlineボタンではなく、行クリックで開く
+## 2022-08-13
 
-
-## 2022/08/14
-
-* 開いた状態の保存
-
-
-## 2022/08/13
-
-* 独立した編集ファイル
-* 設定ファイル編集ボタン
-* 現在のパス追加
-* クリックでnew window
-* 更新
-
+- First version: separate configuration file, button to open it, add the current folder, open in a new window, refresh.

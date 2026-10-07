@@ -1,9 +1,31 @@
 {
   "name": "project-manager-deep-json",
   "displayName": "Project Manager Deep Json",
-  "description": "",
+  "description": "Manage project paths in a freely nested JSONC tree. Open one folder, a workspace, or several at once from the sidebar.",
   "publisher": "ichir0roie",
-  "repository": "https://github.com/ichir0roie/vscode-project-manager-deep-json",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ichir0roie/vscode-project-manager-deep-json"
+  },
+  "bugs": {
+    "url": "https://github.com/ichir0roie/vscode-project-manager-deep-json/issues"
+  },
+  "homepage": "https://github.com/ichir0roie/vscode-project-manager-deep-json#readme",
+  "license": "MIT",
+  "icon": "resources/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "keywords": [
+    "project",
+    "projects",
+    "project manager",
+    "workspace",
+    "folder",
+    "switcher",
+    "jsonc"
+  ],
   "version": "5.0.0",
   "engines": {
     "vscode": "^1.90.0"
